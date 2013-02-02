@@ -1,7 +1,7 @@
-int FIRST_STATE = 0;
-int GAMEPLAY_STATE = 1;
-int FINISH_STATE = 2;
-int STATE_COUNT = 3;
+static final int FIRST_STATE = 0;
+static final int GAMEPLAY_STATE = 1;
+static final int FINISH_STATE = 2;
+static final int STATE_COUNT = 3;
 
 BaseState[] states;
 int currentState;
@@ -11,9 +11,14 @@ void setup(){
   currentState = FIRST_STATE;
   states = new BaseState[STATE_COUNT];
   for(int i = 0; i < states.length; i++){
-    states[i] = BaseState.createState(i); 
+    states[i] = createState(i); 
   }
   setState(FIRST_STATE);
+  
+  
+  PFont font = loadFont("CalcitePro-Regular-48.vlw"); 
+  textFont(font, 72);
+  textAlign(CENTER);
 }
 
 void draw(){
@@ -26,6 +31,19 @@ void setState(int state){
   states[currentState].setup();
 }
 
+BaseState createState(int state){
+  switch(state){
+    case FIRST_STATE:
+      return new TitleState();
+    case GAMEPLAY_STATE:
+      return new GameplayState();
+    case FINISH_STATE:
+      return new FinishState();
+    default:
+      return null;
+  } 
+}
+
 class BaseState{
   void setup(){}
  
@@ -34,25 +52,12 @@ class BaseState{
   void cleanup(){}
   
   void keyPressed(){}
-  
-  static BaseState createState(int state){
-    switch(state){
-      case FIRST_STATE:
-        return new TitleState();
-      case GAMEPLAY_STATE:
-        return new GameplayState();
-      case FINISH_STATE:
-        return new FinishState();
-      default:
-        return null;
-    } 
-  }
-  
 }
 
 class TitleState extends BaseState{
   void setup(){
-    
+    background(255, 0, 0);
+    text("MeatBeat: The Test Title Screen", width/2, height/2);
   }
  
   void draw(){
