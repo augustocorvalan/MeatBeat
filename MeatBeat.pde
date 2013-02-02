@@ -1,5 +1,7 @@
 int FIRST_STATE = 0;
-int STATE_COUNT = 1;
+int GAMEPLAY_STATE = 1;
+int FINISH_STATE = 2;
+int STATE_COUNT = 3;
 
 BaseState[] states;
 int currentState;
@@ -37,6 +39,10 @@ class BaseState{
     switch(state){
       case FIRST_STATE:
         return new TitleState();
+      case GAMEPLAY_STATE:
+        return new GameplayState();
+      case FINISH_STATE:
+        return new FinishState();
       default:
         return null;
     } 
@@ -46,7 +52,7 @@ class BaseState{
 
 class TitleState extends BaseState{
   void setup(){
-    //background(255, 0, 0);
+    
   }
  
   void draw(){
@@ -59,4 +65,40 @@ class TitleState extends BaseState{
   void cleanup(){
     
   }
+}
+
+class GameplayState extends BaseState{
+  void setup(){
+   
+  }
+ 
+  void draw(){
+   
+  }
+ 
+  void keyPressed(){
+   
+  }
+ 
+  void cleanup(){
+   
+  } 
+}
+
+class FinishState extends BaseState{
+  void setup(){
+   
+  }
+ 
+  void draw(){
+   
+  }
+ 
+  void keyPressed(){
+   
+  }
+ 
+  void cleanup(){
+   
+  } 
 }
