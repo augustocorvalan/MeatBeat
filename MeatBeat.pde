@@ -55,80 +55,6 @@ BaseState createState(int state){
   } 
 }
 
-class BaseState{
-  void setup(){}
- 
-  void draw(){}
-  
-  void cleanup(){}
-  
-  void keyPressed(){}
-}
-
-class TitleState extends BaseState{
-  void setup(){
-    background(255, 0, 0);
-    text("MeatBeat: The Test Title Screen", width/2, height/2);
-    
-  }
- 
-  void draw(){
-  }
-  
-  void keyPressed(){
-    //TEST REMOVE
-    setState(GAMEPLAY_STATE);
-    
-  }
-  
-  void cleanup(){
-    
-  }
-}
-
-class GameplayState extends BaseState{
-//  int totalTrees = 1;
-//  Tree[] trees = new Tree[totalTrees];
-  
-  void setup(){
-    background(0);
-//    trees = setupTrees(totalTrees);
-  }
- 
-  void draw(){
-      background(0);
-      //BACKGROUND DRAWING
-      drawHill();
-//    drawTrees(trees);
-  }
- 
-  void keyPressed(){
-   
-  }
- 
-  void cleanup(){
-   
-  } 
-}
-
-class FinishState extends BaseState{
-  void setup(){
-   
-  }
- 
-  void draw(){
-   
-  }
- 
-  void keyPressed(){
-   
-  }
- 
-  void cleanup(){
-   
-  } 
-}
-
 /**
 DYNAMIC BACKGROUND STUFF
 **/
@@ -239,16 +165,6 @@ void branch(float h, float theta) {
     branch(h, theta);
     popMatrix();
   }
-  
-class Player{
-  int lives;
- 
-   Player(){
-     lives = INITIAL_LIVES;
-   } 
 }
 
-class MeatChunk{
-  int xPosition, yPosition;
-  
-}
+
