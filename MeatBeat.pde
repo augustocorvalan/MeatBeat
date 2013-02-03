@@ -1,3 +1,8 @@
+/* @pjs
+smooth=true;
+font=chubhand.ttf;
+*/
+
 static final int FIRST_STATE = 0;
 static final int GAMEPLAY_STATE = 1;
 static final int FINISH_STATE = 2;
@@ -22,10 +27,12 @@ void setup(){
   setState(FIRST_STATE);
   
   
-  PFont font = loadFont("CalcitePro-Regular-48.vlw"); 
-  textFont(font, 72);
+  PFont font = createFont("chubhand.ttf", 48); 
+  textFont(font, 48);
   textAlign(CENTER);
-  
+  ellipseMode(CENTER);
+  rectMode(CENTER);
+  states[currentState].setup();
 }
 
 void draw(){
