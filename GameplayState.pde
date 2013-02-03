@@ -1,20 +1,21 @@
 class GameplayState extends BaseState{
 //  int totalTrees = 1;
 //  Tree[] trees = new Tree[totalTrees];
-  Particle[] particles = new Particle[detail+1];
   int tracks = 0;
+  PImage[] numbers = new PImage[10];  //holds the meat numbers
   
   void setup(){
     background(0);
-//    particles = setupHill();
 //    trees = setupTrees(totalTrees);
+    numbers = cutUpNumbers(meatFont);
   }
  
   void draw(){
       background(0);
       //BACKGROUND DRAWING
-//      drawHill(particles);
 //    drawTrees(trees);
+      //LIVES
+      drawLives(meatLife);
   }
  
   void keyPressed(){
