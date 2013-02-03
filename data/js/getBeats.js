@@ -70,6 +70,7 @@ function getBeats(file, callback) {
       }
     }
     callback(beats);
+    return beats;
   });
 }
 

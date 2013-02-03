@@ -10,6 +10,7 @@ class GameplayState extends BaseState{
 //    numbers = cutUpNumbers(meatFont);
     player = new Player(INITIAL_LIVES, meatLife);  //player instance
     player.setupLives();
+    println(calcNumTracks(getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console))));
   }
  
   void draw(){
