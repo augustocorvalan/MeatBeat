@@ -27,9 +27,9 @@ function getBeats(file, callback) {
     var track = midiFile.tracks[1];
     var ticksPerBeat = midiFile.header.ticksPerBeat;
     var secondsPerBeat = 120;
-    var midi2beat = [36, 37];
-    var beatInd = [0, 0];
-    var beats = [[0], [0]];
+    var midi2beat = [36, 37, 38, 39, 40, 41, 42, 43];
+    var beatInd = [0, 0, 0, 0, 0, 0, 0, 0];
+    beats = [[0], [0], [0], [0], [0], [0], [0], [0]]; //GLOBAL so processing can hit it
     var i, j, n;
 
     // get info in terms of ticks
