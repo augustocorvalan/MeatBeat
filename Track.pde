@@ -8,8 +8,8 @@ class Track {
     sound = s;
   }
   
-  String[] getSound() {
-    return sounds;
+  String getSound() {
+    return sound;
   }
   
   float[] getBeats() {
