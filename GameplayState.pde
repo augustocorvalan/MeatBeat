@@ -15,7 +15,7 @@ class GameplayState extends BaseState{
   }
  
   void keyPressed(){
-   
+    setState(FINISH_STATE);
   }
  
   void cleanup(){
