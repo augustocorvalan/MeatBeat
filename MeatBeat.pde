@@ -16,6 +16,8 @@ int currentState;
 static final int HEIGHT = 600;
 static final int WIDTH = 800;
 
+PImage meatLife;
+
 Player player;
 
 void setup(){
@@ -30,7 +32,8 @@ void setup(){
   
   player = new Player(INITIAL_LIVES);  //player instance
   
-  meatFont = loadImage("sprites/number font_v2.png");  //load meat font
+  meatLife = loadImage("sprite sheets/meatball.png");
+  meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
   PFont font = createFont("chubhand.ttf", 48); 
   textFont(font, 48);
   textAlign(CENTER);
