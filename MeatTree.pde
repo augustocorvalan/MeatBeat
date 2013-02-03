@@ -3,6 +3,7 @@ TREES
 **/
 static final float BPM = 120;
 int counter = 0; //keeps count of frame rate
+int length;
 
 class Tree{
   int x, y, height;
@@ -33,7 +34,7 @@ class Tree{
 }
 
 Tree[] setupTrees(int treeTotal){
-  int tallestTree = 175;
+  int tallestTree = 100;
   int shortestTree = 55;
   int xMin = -WIDTH + 30;
   int xMax = 0;
@@ -55,16 +56,17 @@ Tree[] setupTrees(int treeTotal){
 
 void drawTrees(Tree[] trees){
   pushMatrix();
-  translate(0, 550);
+  translate(0, HEIGHT-50);
   counter++;
   float constant = 0.25; //constant to slow down bps artificially
   float bps = BPM/60; 
-  for(int i = 0; i < trees.length; i++){
+  length = trees.length;
+  for(int i = 0; i < length; i++){
    Tree t = trees[i];
    float angle = t.getAngle();
    drawTree(t.getX(), t.getY(), t.getHeight(), i, angle);
    //Update the tree angle
-   float buffer = (BPM/60) / frameRate / 4  * 2 * PI; //slow down bpm by this much
+   float buffer = (BPM/60) / frameRate / 8  * 2 * PI; //slow down bpm by this much
    angle += buffer;
    t.setAngle(angle);
   }
@@ -75,12 +77,14 @@ void drawTrees(Tree[] trees){
 
 //@param height of tree
 void drawTree(int x, int y, int height, int i, float angle){
-  stroke(255,255,255);
+  stroke(255, 255*sin(angle), 255*sin(angle));
+  strokeWeight(3 + cos(angle));
   // Let's pick an angle 0 to 90 degrees based on the mouse position
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;
   // Convert it to radians
-  translate(100 + 100 * i, 0);
+  int gap = WIDTH/(length+1);
+  translate(gap, 0);
   float theta = radians(a);
   // Start the tree from the bottom of the screen
   // Start the recursive branching!
