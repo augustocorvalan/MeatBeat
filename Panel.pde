@@ -1,10 +1,9 @@
 class Panel{
   float xPosition, yPosition, origY;
-  float levelInterval = (PI/2)/frameRate;
   float angle = 0;
   float levelInterval = .5;
   int opacity;
-  int opacityInterval = 255/frameRate;
+  int opacityInterval = round(255/frameRate);
   boolean canRedraw;
   boolean canRepress;
   
