@@ -3,6 +3,12 @@ TREES
 **/
 static final float BPM = 120;
 int counter = 0; //keeps count of frame rate
+int length;
+//colors for tree
+int treeRed = 155;
+int treeGreen = 155;
+int treeBlue = 155;  
+String colorConstant = "red"; //keeps track of which color not to vary
 
 class Tree{
   int x, y, height;
@@ -11,9 +17,7 @@ class Tree{
     this.x = x;
     this.y = y;
     this.height = height;
-    //randomly assign some trees a non-zero angle
-//    if(random(0, 6) == 
-    angle = 0;
+    angle = 60;
   }
   int getX(){
     return x;
@@ -33,7 +37,7 @@ class Tree{
 }
 
 Tree[] setupTrees(int treeTotal){
-  int tallestTree = 175;
+  int tallestTree = 100;
   int shortestTree = 55;
   int xMin = -WIDTH + 30;
   int xMax = 0;
@@ -48,23 +52,25 @@ Tree[] setupTrees(int treeTotal){
     xMin += 100;
     xMax += 100;
     trees[i] = new Tree(x, y, height);
-//    console.log("tree x:" + t.getX());
+    //randomly assign some trees a different starting angle
+    if(random(0, treeTotal/3) == 1) trees[i].setAngle(30);   
   }
   return trees;
 }
 
 void drawTrees(Tree[] trees){
   pushMatrix();
-  translate(0, 550);
+  translate(0, HEIGHT-50);
   counter++;
   float constant = 0.25; //constant to slow down bps artificially
   float bps = BPM/60; 
-  for(int i = 0; i < trees.length; i++){
+  length = trees.length;
+  for(int i = 0; i < length; i++){
    Tree t = trees[i];
    float angle = t.getAngle();
    drawTree(t.getX(), t.getY(), t.getHeight(), i, angle);
    //Update the tree angle
-   float buffer = (BPM/60) / frameRate / 4  * 2 * PI; //slow down bpm by this much
+   float buffer = (BPM/60) / frameRate / 8  * 2 * PI; //slow down bpm by this much
    angle += buffer;
    t.setAngle(angle);
   }
@@ -75,12 +81,29 @@ void drawTrees(Tree[] trees){
 
 //@param height of tree
 void drawTree(int x, int y, int height, int i, float angle){
-  stroke(255,255,255);
+  //TODO: NOT DRY, FIX LATER
+  float red, green, blue;
+  if(colorConstant.equals("red")){
+    red = treeRed;
+    green = treeGreen*sin(angle);
+    blue = treeBlue*sin(angle);
+  } else if(colorConstant.equals("green")){
+    red = treeRed*sin(angle);
+    green = treeGreen;
+    blue = treeBlue*sin(angle);
+  } else{
+    red = treeRed*sin(angle);
+    green = treeGreen*sin(angle);
+    blue = treeBlue;
+  }
+  stroke(red, green, blue, 50);
+  strokeWeight(3 + cos(angle));
   // Let's pick an angle 0 to 90 degrees based on the mouse position
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;
   // Convert it to radians
-  translate(100 + 100 * i, 0);
+  int gap = WIDTH/(length+1);
+  translate(gap, 0);
   float theta = radians(a);
   // Start the tree from the bottom of the screen
   // Start the recursive branching!

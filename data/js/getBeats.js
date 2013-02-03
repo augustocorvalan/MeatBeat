@@ -26,10 +26,10 @@ function getBeats(file, callback) {
     var metaTrack = midiFile.tracks[0];
     var track = midiFile.tracks[1];
     var ticksPerBeat = midiFile.header.ticksPerBeat;
-    var secondsPerBeat = 120;
-    var midi2beat = [36, 37];
-    var beatInd = [0, 0];
-    var beats = [[0], [0]];
+    secondsPerBeat = 120;                             //GLOBAL for processing.
+    var midi2beat = [36, 37, 38, 39, 40, 41, 42, 43];
+    var beatInd = [0, 0, 0, 0, 0, 0, 0, 0];
+    beats = [[0], [0], [0], [0], [0], [0], [0], [0]]; //GLOBAL so processing can hit it
     var i, j, n;
 
     // get info in terms of ticks
@@ -62,7 +62,7 @@ function getBeats(file, callback) {
     }
     if (!secondsPerBeat) secondsPerBeat = 60 / 120;
 
-    var secondsPerTick = secondsPerBeat / ticksPerBeat;
+    var secondsPerTick = secondsPerBeat / ticksPerBeat; // GLOBAL, processing needs it.
     for (j = 0; j < beats.length; ++j) {
       n = beats[j].length;
       for (i = 0; i < n; ++i) {
