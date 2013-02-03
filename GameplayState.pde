@@ -15,7 +15,7 @@ class GameplayState extends BaseState{
   void draw(){
       background(0);
       //BACKGROUND DRAWING
-    drawTrees(trees);
+      drawTrees(trees);
       //LIVES
       player.drawLives();
   }
