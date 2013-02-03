@@ -1,25 +1,28 @@
 class GameplayState extends BaseState{
-//  int totalTrees = 1;
-//  Tree[] trees = new Tree[totalTrees];
+  int totalTrees = 3;
+  Tree[] trees = new Tree[totalTrees];
   int tracks = 0;
   PImage[] numbers = new PImage[10];  //holds the meat numbers
   
   void setup(){
     background(0);
-//    trees = setupTrees(totalTrees);
-    numbers = cutUpNumbers(meatFont);
+    trees = setupTrees(totalTrees);  //tree setup
+//    numbers = cutUpNumbers(meatFont);
+    player = new Player(INITIAL_LIVES, meatLife);  //player instance
+    player.setupLives();
   }
  
   void draw(){
       background(0);
       //BACKGROUND DRAWING
-//    drawTrees(trees);
+    drawTrees(trees);
       //LIVES
-      drawLives(meatLife);
+      player.drawLives();
   }
  
   void keyPressed(){
-   setState(FINISH_STATE);
+//   setState(FINISH_STATE);
+    player.decreaseLives();
   }
  
   void cleanup(){
