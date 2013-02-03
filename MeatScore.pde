@@ -10,7 +10,6 @@ PImage[] cutUpNumbers(PImage font){
     numbers[i] = font.get(x, 180, xOffset, yOffset);
     x += xOffset;  
   }
-  console.log(numbers);
   return numbers;
 }
 
