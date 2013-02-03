@@ -84,19 +84,16 @@ class TitleState extends BaseState{
 }
 
 class GameplayState extends BaseState{
-//  int totalTrees = 1;
-//  Tree[] trees = new Tree[totalTrees];
+  int totalTrees = 1;
+  Tree[] trees = new Tree[totalTrees];
   
   void setup(){
     background(0);
-//    trees = setupTrees(totalTrees);
+    trees = setupTrees(totalTrees);
   }
  
   void draw(){
-      background(0);
-      //BACKGROUND DRAWING
-      drawHill();
-//    drawTrees(trees);
+    drawTrees(trees);
   }
  
   void keyPressed(){
@@ -130,30 +127,6 @@ class FinishState extends BaseState{
 /**
 DYNAMIC BACKGROUND STUFF
 **/
-
-/**
-HILLS
-**/
-void drawHill(){
-  color green = color(50, 255, 0);
-  fill(green); 
-  beginShape();
-  vertex(0, 70); // first point
-  //the x co-ordinate of the curve start control point (P1)
-  //the y co-ordinate of the curve start control point (P1)
-  //the x co-ordinate of the curve end control point (P2)
-  //the y co-ordinate of the curve end control point (P2)
-  //the x co-ordinate of the end point (P3)
-  //the y co-ordinate of the end point (P3)
-  bezierVertex(25, 25, 100, 50, 50, 100);
-  bezierVertex(20, 130, 75, 140, 120, 120);
-  endShape();
-}
-
-
-/**
-TREES
-**/
 class Tree{
   int x, y, height;
   Tree(int x, int y, int height){
@@ -175,20 +148,20 @@ class Tree{
 Tree[] setupTrees(int treeTotal){
   int tallestTree = 175;
   int shortestTree = 75;
-  int xMin = -WIDTH + 30;
-  int xMax = 0;
+  int xMin = -WIDTH + 10;
+  int xMax = -WIDTH + 30;
   Tree[] trees = new Tree[treeTotal]; 
   for(int i = 0; i < treeTotal; i++){
     //randomly generate height and x between range 
     int height = floor(random(shortestTree, tallestTree));
     int x = floor(random(xMin, xMax));
-//    console.log("random x:" + x);
+    console.log("random x:" + x);
     int y = HEIGHT - height;
     //increase the x range
     xMin += 100;
     xMax += 100;
     Tree t = new Tree(x, y, height);
-//    console.log("tree x:" + t.getX());
+    console.log("tree x:" + t.getX());
     trees[i] = t;
   }
   return trees;
@@ -209,12 +182,18 @@ void drawTree(int x, int y, int height){
     // Convert it to radians
     float theta = radians(a);
     // Start the tree from the bottom of the screen
+    pushMatrix();
+    translate(width/2,height/2);
+    // Draw a line height pixels
+    line(x, y, x, y - height*-1);
+    // Move to the end of that line
+    translate(x, y - height*-1);
     // Start the recursive branching!
-    branch(height, theta);
-    
+    branch(y, height, theta);
+    popMatrix();
 }  
 
-void branch(float h, float theta) {
+void branch(int y, float h, float theta) {
   // Each branch will be 2/3rds the size of the previous one
   h *= 0.66;
   
@@ -223,10 +202,9 @@ void branch(float h, float theta) {
   if (h > 2) {
     pushMatrix();    // Save the current state of transformation (i.e. where are we now)
     rotate(theta);   // Rotate by theta
- 
     line(0, 0, 0, -h);  // Draw the branch
     translate(0, -h); // Move to the end of the branch
-    branch(h, theta);       // Ok, now call myself to draw two new branches!!
+    branch(y, h, theta);       // Ok, now call myself to draw two new branches!!
     popMatrix();     // Whenever we get back here, we "pop" in order to restore the previous matrix state
     
     // Repeat the same thing, only branch off to the "left" this time!
@@ -234,7 +212,8 @@ void branch(float h, float theta) {
     rotate(-theta);
     line(0, 0, 0, -h);
     translate(0, -h);
-    branch(h, theta);
+    branch(y, h, theta);
     popMatrix();
   }
 }
+
