@@ -11,7 +11,7 @@ static final int STATE_COUNT = 3;
 static final int INITIAL_LIVES = 10;
 
 static final int MAX_FRAME_RATE = 60;
-int fps = 0;  //hhow many frames drawn this second  
+int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
 int currentState;
@@ -32,8 +32,6 @@ void setup(){
     states[i] = createState(i); 
   }
   setState(FIRST_STATE);
-  
-  player = new Player(INITIAL_LIVES);  //player instance
   
   meatLife = loadImage("sprite sheets/meatball.png");
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
