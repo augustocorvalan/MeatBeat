@@ -8,17 +8,20 @@ static final int GAMEPLAY_STATE = 1;
 static final int FINISH_STATE = 2;
 static final int STATE_COUNT = 3;
 
-static final int INITIAL_LIVES = 3;
+static final int INITIAL_LIVES = 10;
+
+static final int MAX_FRAME_RATE = 60;
+int fps = 0;  //hhow many frames drawn this second  
 
 BaseState[] states;
 int currentState;
 
-static final int HEIGHT = 600;
-static final int WIDTH = 800;
+static final int HEIGHT = 600;  //screen height
+static final int WIDTH = 800;  //screen width
 
-PImage meatLife;
+PImage meatLife;  //image instance for meat life
 
-Player player;
+Player player;  //player instance
 
 void setup(){
   size(800, 600);
@@ -43,6 +46,7 @@ void setup(){
 }
 
 void draw(){
+  fps = (fps + 1)%MAX_FRAME_RATE;  //update fps
   states[currentState].draw();
 }
 
