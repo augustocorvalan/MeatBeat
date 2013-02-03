@@ -4,6 +4,11 @@ TREES
 static final float BPM = 120;
 int counter = 0; //keeps count of frame rate
 int length;
+//colors for tree
+int treeRed = 155;
+int treeGreen = 155;
+int treeBlue = 155;  
+String colorConstant = "red"; //keeps track of which color not to vary
 
 class Tree{
   int x, y, height;
@@ -12,9 +17,7 @@ class Tree{
     this.x = x;
     this.y = y;
     this.height = height;
-    //randomly assign some trees a non-zero angle
-//    if(random(0, 6) == 
-    angle = 0;
+    angle = 60;
   }
   int getX(){
     return x;
@@ -49,7 +52,8 @@ Tree[] setupTrees(int treeTotal){
     xMin += 100;
     xMax += 100;
     trees[i] = new Tree(x, y, height);
-//    console.log("tree x:" + t.getX());
+    //randomly assign some trees a different starting angle
+    if(random(0, treeTotal/3) == 1) trees[i].setAngle(30);   
   }
   return trees;
 }
@@ -77,7 +81,22 @@ void drawTrees(Tree[] trees){
 
 //@param height of tree
 void drawTree(int x, int y, int height, int i, float angle){
-  stroke(255, 255*sin(angle), 255*sin(angle));
+  //TODO: NOT DRY, FIX LATER
+  float red, green, blue;
+  if(colorConstant.equals("red")){
+    red = treeRed;
+    green = treeGreen*sin(angle);
+    blue = treeBlue*sin(angle);
+  } else if(colorConstant.equals("green")){
+    red = treeRed*sin(angle);
+    green = treeGreen;
+    blue = treeBlue*sin(angle);
+  } else{
+    red = treeRed*sin(angle);
+    green = treeGreen*sin(angle);
+    blue = treeBlue;
+  }
+  stroke(red, green, blue, 50);
   strokeWeight(3 + cos(angle));
   // Let's pick an angle 0 to 90 degrees based on the mouse position
   int amplitude = 400;
