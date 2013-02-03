@@ -3,6 +3,8 @@ static final int GAMEPLAY_STATE = 1;
 static final int FINISH_STATE = 2;
 static final int STATE_COUNT = 3;
 
+static final int INITIAL_LIVES = 3;
+
 BaseState[] states;
 int currentState;
 
@@ -67,6 +69,7 @@ class TitleState extends BaseState{
   void setup(){
     background(255, 0, 0);
     text("MeatBeat: The Test Title Screen", width/2, height/2);
+    
   }
  
   void draw(){
@@ -125,7 +128,6 @@ class FinishState extends BaseState{
    
   } 
 }
-
 
 /**
 DYNAMIC BACKGROUND STUFF
@@ -237,4 +239,16 @@ void branch(float h, float theta) {
     branch(h, theta);
     popMatrix();
   }
+  
+class Player{
+  int lives;
+ 
+   Player(){
+     lives = INITIAL_LIVES;
+   } 
+}
+
+class MeatChunk{
+  int xPosition, yPosition;
+  
 }
