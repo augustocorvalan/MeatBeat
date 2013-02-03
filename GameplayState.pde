@@ -5,19 +5,19 @@ class GameplayState extends BaseState{
   
   void setup(){
     background(0);
-    particles = setupHill();
+//    particles = setupHill();
 //    trees = setupTrees(totalTrees);
   }
  
   void draw(){
       background(0);
       //BACKGROUND DRAWING
-      drawHill(particles);
+//      drawHill(particles);
 //    drawTrees(trees);
   }
  
   void keyPressed(){
-    setState(FINISH_STATE);
+   
   }
  
   void cleanup(){
