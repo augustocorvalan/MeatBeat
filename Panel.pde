@@ -14,6 +14,7 @@ class Panel{
     this.origY = yPosition;
     opacity = 255;
     canRedraw = true;
+    canRepress = true;
   }
   
   void draw(){
