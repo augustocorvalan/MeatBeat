@@ -13,8 +13,6 @@ static final int INITIAL_LIVES = 3;
 BaseState[] states;
 int currentState;
 
-static final int BPM = 1/secondsPerBeat*60; 
-
 static final int HEIGHT = 600;
 static final int WIDTH = 800;
 

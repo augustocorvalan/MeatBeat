@@ -8,9 +8,6 @@ class GameplayState extends BaseState{
     background(0);
 //    particles = setupHill();
 //    trees = setupTrees(totalTrees);
-    playSound();
-    playSound();
-    playSound();
   }
  
   void draw(){

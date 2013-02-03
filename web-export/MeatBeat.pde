@@ -1,3 +1,8 @@
+/* @pjs
+smooth=true;
+font=chubhand.ttf;
+*/
+
 static final int FIRST_STATE = 0;
 static final int GAMEPLAY_STATE = 1;
 static final int FINISH_STATE = 2;
@@ -7,9 +12,6 @@ static final int INITIAL_LIVES = 3;
 
 BaseState[] states;
 int currentState;
-
-//static final int BPM = 1/secondsPerBeat*60; //BRING THIS BACK WHEN SERVER IS ON
-static final int BPM = 110;
 
 static final int HEIGHT = 600;
 static final int WIDTH = 800;
@@ -25,10 +27,12 @@ void setup(){
   setState(FIRST_STATE);
   
   
-  PFont font = loadFont("CalcitePro-Regular-48.vlw"); 
-  textFont(font, 72);
+  PFont font = createFont("chubhand.ttf", 48); 
+  textFont(font, 48);
   textAlign(CENTER);
-  
+  ellipseMode(CENTER);
+  rectMode(CENTER);
+  states[currentState].setup();
 }
 
 void draw(){
@@ -229,21 +233,27 @@ class BaseState{
 class FinishState extends BaseState{
   int CHUNK_NUMBER = 4;
   MeatChunk[] chunkArray;
+  Panel[] panelArray;
+  float threshold = 5;
   
   float sin_offset= PI/2;
   
   void setup(){
-    chunkArray = new MeatChunk[4];
-    int offset = 20;
+    chunkArray = new MeatChunk[CHUNK_NUMBER];
+    panelArray = new Panel[CHUNK_NUMBER];
+    int offset = 60;
     for(int i = 0; i < chunkArray.length; i++){
-      chunkArray[i] = new MeatChunk(offset + (width - (2 * offset)) * i/CHUNK_NUMBER,  height/2);
+      chunkArray[i] = new MeatChunk(offset + (width - offset * 2)/ (CHUNK_NUMBER - 1) * i,  height/2);
       chunkArray[i].velocity = .25;
       chunkArray[i].gravity = .5;
+      panelArray[i] = new Panel(offset + (width - offset * 2)/ (CHUNK_NUMBER - 1) * i, height - 50);
     }
   }
  
   void draw(){
     background(0);
+    stroke(255);
+    line(0,height-50,width,height-50);
     for(int i = 0; i < chunkArray.length; i++){
       fill(0, 241, 177);
       ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, 25, 25);
@@ -252,12 +262,55 @@ class FinishState extends BaseState{
       if(chunkArray[i].yPosition >= 600){
          chunkArray[i].velocity = -10;
       }
+      panelArray[i].draw();
    }
+   rect(0,0,25,25);
    sin_offset += PI/180;
   }
  
   void keyPressed(){
-   
+    switch(key){
+      case 'j':
+        if(CHUNK_NUMBER >= 1){
+          if(panelArray[0].canRedraw){
+            panelArray[0].canRedraw = false;
+            if((chunkArray[0].yPosition >= (panelArray[0].origY + threshold) && !panelArray[0].canRedraw)){
+               chunkArray[0].velocity = -15;
+            }
+          }
+        }
+        break;
+     case 'k':
+      if(CHUNK_NUMBER >= 2){
+        if(panelArray[1].canRedraw){
+          panelArray[1].canRedraw = false;
+          if((chunkArray[1].yPosition >= (panelArray[1].origY + threshold) && !panelArray[1].canRedraw)){
+            chunkArray[1].velocity = -15;
+          }
+        }
+      }
+      break;
+     case 'l':
+      if(CHUNK_NUMBER >= 3){
+        if(panelArray[2].canRedraw){
+          panelArray[2].canRedraw = false;
+          if((chunkArray[2].yPosition >= (panelArray[1].origY + threshold) && !panelArray[2].canRedraw)){
+             chunkArray[2].velocity = -15;
+          }
+        }
+      }
+      break;
+     case ';':
+      if(CHUNK_NUMBER >= 4){
+        if(panelArray[3].canRedraw){
+          panelArray[3].canRedraw = false;
+          if((chunkArray[3].yPosition >= (panelArray[3].origY + threshold) && !panelArray[3].canRedraw)){
+             chunkArray[3].velocity = -15;
+          }
+        }
+      }
+      break; 
+    }
   }
  
   void cleanup(){
@@ -274,9 +327,12 @@ class GameplayState extends BaseState{
     background(0);
 //    particles = setupHill();
 //    trees = setupTrees(totalTrees);
-    playSound();
-    playSound();
-    playSound();
+    int i = 0;
+    while (i < 100000000) {
+      i++;
+    }
+    playSound2("../music/meatbeatkick.ogg");
+    playSound("../music/meatbeatkick.ogg");
   }
  
   void draw(){
@@ -287,20 +343,37 @@ class GameplayState extends BaseState{
   }
  
   void keyPressed(){
-   
-  }
-  
-  void calcTracks() {
-    for(int i=0; i<beats.length; i++) {
-      if (beats[i].length > 0) {
-        tracks++;
-      }
-    }
+    playSound("../music/meatbeatkick.ogg");
+   //setState(FINISH_STATE);
   }
  
   void cleanup(){
    
   } 
+}
+
+
+class Level {
+  
+  int numTracks;
+  Track[] tracks;
+  
+  
+  Level(float[][] beats,  int meats) {
+    numTracks = calcTracks();
+  
+  }
+  
+  int calcTracks() {
+    int tracks = 0;
+    for(int i=0; i<beats.length; i++) {
+      if (beats[i].length > 0) {
+        tracks++;
+      }
+    }
+    return tracks;
+  }
+  
 }
 class MeatChunk{
   int xPosition, yPosition;
@@ -322,6 +395,12 @@ TREES
 **/
 static final float BPM = 120;
 int counter = 0; //keeps count of frame rate
+int length;
+//colors for tree
+int treeRed = 155;
+int treeGreen = 155;
+int treeBlue = 155;  
+String colorConstant = "red"; //keeps track of which color not to vary
 
 class Tree{
   int x, y, height;
@@ -330,9 +409,7 @@ class Tree{
     this.x = x;
     this.y = y;
     this.height = height;
-    //randomly assign some trees a non-zero angle
-//    if(random(0, 6) == 
-    angle = 0;
+    angle = 60;
   }
   int getX(){
     return x;
@@ -352,7 +429,7 @@ class Tree{
 }
 
 Tree[] setupTrees(int treeTotal){
-  int tallestTree = 175;
+  int tallestTree = 100;
   int shortestTree = 55;
   int xMin = -WIDTH + 30;
   int xMax = 0;
@@ -367,23 +444,25 @@ Tree[] setupTrees(int treeTotal){
     xMin += 100;
     xMax += 100;
     trees[i] = new Tree(x, y, height);
-//    console.log("tree x:" + t.getX());
+    //randomly assign some trees a different starting angle
+    if(random(0, treeTotal/3) == 1) trees[i].setAngle(30);   
   }
   return trees;
 }
 
 void drawTrees(Tree[] trees){
   pushMatrix();
-  translate(0, 550);
+  translate(0, HEIGHT-50);
   counter++;
   float constant = 0.25; //constant to slow down bps artificially
   float bps = BPM/60; 
-  for(int i = 0; i < trees.length; i++){
+  length = trees.length;
+  for(int i = 0; i < length; i++){
    Tree t = trees[i];
    float angle = t.getAngle();
    drawTree(t.getX(), t.getY(), t.getHeight(), i, angle);
    //Update the tree angle
-   float buffer = (BPM/60) / frameRate / 4  * 2 * PI; //slow down bpm by this much
+   float buffer = (BPM/60) / frameRate / 8  * 2 * PI; //slow down bpm by this much
    angle += buffer;
    t.setAngle(angle);
   }
@@ -394,12 +473,29 @@ void drawTrees(Tree[] trees){
 
 //@param height of tree
 void drawTree(int x, int y, int height, int i, float angle){
-  stroke(255,255,255);
+  //TODO: NOT DRY, FIX LATER
+  float red, green, blue;
+  if(colorConstant.equals("red")){
+    red = treeRed;
+    green = treeGreen*sin(angle);
+    blue = treeBlue*sin(angle);
+  } else if(colorConstant.equals("green")){
+    red = treeRed*sin(angle);
+    green = treeGreen;
+    blue = treeBlue*sin(angle);
+  } else{
+    red = treeRed*sin(angle);
+    green = treeGreen*sin(angle);
+    blue = treeBlue;
+  }
+  stroke(red, green, blue, 50);
+  strokeWeight(3 + cos(angle));
   // Let's pick an angle 0 to 90 degrees based on the mouse position
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;
   // Convert it to radians
-  translate(100 + 100 * i, 0);
+  int gap = WIDTH/(length+1);
+  translate(gap, 0);
   float theta = radians(a);
   // Start the tree from the bottom of the screen
   // Start the recursive branching!
@@ -432,6 +528,39 @@ void branch(float h, float theta) {
   }
 }
 
+class Panel{
+  float xPosition, yPosition, origY;
+  float levelInterval = (PI/2)/frameRate;
+  float angle = 0;
+  float levelInterval = .5;
+  int opacity;
+  int opacityInterval = 255/frameRate;
+  boolean canRedraw;
+  boolean canRepress;
+  
+  Panel(float xPosition, float yPosition){
+    this.xPosition = xPosition;
+    this.yPosition = yPosition;
+    this.origY = yPosition;
+    opacity = 255;
+    canRedraw = true;
+    canRepress = true;
+  }
+  
+  void draw(){
+    if(!canRedraw){
+      noStroke();        fill(213, 143, 45, opacity);
+      rect(xPosition, yPosition, 50, 20);
+      yPosition = yPosition + levelInterval;
+      opacity = opacity - opacityInterval;
+      if(yPosition >= origY + frameRate * levelInterval){
+        canRedraw = true;
+        opacity = 255;
+        yPosition = origY;
+      }
+    }
+  }
+}
 class Player{
   int lives;
  
@@ -458,5 +587,28 @@ class TitleState extends BaseState{
   void cleanup(){
     
   }
+}
+class Track {
+  
+  float[] beats;
+  String sound;
+  
+  Track(float[] beatmatrix, String s) {
+    beats = beatmatrix;
+    sound = s;
+  }
+  
+  String[] getSound() {
+    return sounds;
+  }
+  
+  float[] getBeats() {
+    return beats;
+  }
+  
+  float getBeat(int i) {
+    return beats[i];
+  }
+  
 }
 
