@@ -18,7 +18,8 @@ class Panel{
   
   void draw(){
     if(!canRedraw){
-      noStroke();        fill(213, 143, 45, opacity);
+      noStroke();        
+      fill(213, 143, 45, opacity);
       rect(xPosition, yPosition, 50, 20);
       yPosition = yPosition + levelInterval;
       opacity = opacity - opacityInterval;
