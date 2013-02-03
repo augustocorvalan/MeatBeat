@@ -58,7 +58,8 @@ public class MidiAnalysis {
       noteendCount++;
     }
     
-    private float[] makeBeats(int i) {
+    // Makes an array of beats from timing info of each note. Must be called after each track analysis
+    private float[] makeBeats() {
       float[] tempBeats = new float[noteendCount];
       float songLengthSeconds = (1/bpm) * (notestartCount) * 60;
       float mult = songLengthSeconds / (noteStart[noteendCount-1] + noteStart[1]);
@@ -78,6 +79,8 @@ public class MidiAnalysis {
       //System.out.println("total number of beats: " + (beats.length));
     }
     
+    // Goes through midi file looking for beats with notes not yet encountered,
+    // and records timing information if a new note is encountered.
     private Boolean iterate(Iterator<MidiEvent> it) {
     	int noteval = 0;
     	int thisval;
@@ -108,7 +111,6 @@ public class MidiAnalysis {
     }
     
 	public void analyzeIt() {
-		
 		// 1. Read in a MidiFile
 		MidiFile midi = null;
 		try {
@@ -117,7 +119,7 @@ public class MidiAnalysis {
 			System.err.println(e);
 			System.exit(1);
 		}
-
+		// 2. Extract tempo data from midi file
 		MidiTrack T = midi.getTracks().get(0);
 		Iterator<MidiEvent> itT = T.getEvents().iterator();
 		while(itT.hasNext()) {
@@ -125,30 +127,29 @@ public class MidiAnalysis {
 			if(E.getClass().equals(Tempo.class)) {
 		      Tempo t = (Tempo) E;
 	          setBPM(t.getBpm());
-	          //System.out.println("BPM: " + bpm);
-	          //System.out.println("Seconds per beat: " + spb);
 			}	
 		}
-		
+		// 3. Extract each track and translate them to temporary thebeats array
 		MidiTrack N = midi.getTracks().get(1);
 		Iterator<MidiEvent> itN = N.getEvents().iterator();
 		Boolean moreTracks = true;
-		int tracks = 1;
+		int tracks = 0;
 		float[][] thebeats = new float[8][1000]; 
 		while(moreTracks){
 			itN = N.getEvents().iterator();
 			moreTracks = iterate(itN);
 			if (moreTracks){
-				System.out.println(noteVals.get(tracks-1));
-				thebeats[tracks-1] = makeBeats(tracks-1);
+				System.out.println(noteVals.get(tracks));
+				thebeats[tracks] = makeBeats();
 				tracks++;
 			}
 		}
-		beats = new float[tracks-1][];
-		for(int i=0; i < (tracks-1); i++) {
+		
+		// 4. translate extracted tracks to clean 2-d array of beats
+		beats = new float[tracks][];
+		for(int i=0; i < (tracks); i++) {
           beats[i] = thebeats[i];
 		}
-
 	}
 }
 
