@@ -16,6 +16,8 @@ int currentState;
 static final int HEIGHT = 600;
 static final int WIDTH = 800;
 
+Player player;
+
 void setup(){
   size(800, 600);
   background(255);
@@ -26,7 +28,9 @@ void setup(){
   }
   setState(FIRST_STATE);
   
+  player = new Player(INITIAL_LIVES);  //player instance
   
+  meatFont = loadImage("sprites/number font_v2.png");  //load meat font
   PFont font = createFont("chubhand.ttf", 48); 
   textFont(font, 48);
   textAlign(CENTER);
