@@ -8,17 +8,16 @@ class GameplayState extends BaseState{
     background(0);
     trees = setupTrees(totalTrees);  //tree setup
 //    numbers = cutUpNumbers(meatFont);
-    player = new Player(INITIAL_LIVES, meatLife);  //player instance
-    player.setupLives();
-    println(calcNumTracks(getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console))));
+//    player = new Player(INITIAL_LIVES, meatLife);  //player instance
+//    player.setupLives();
   }
  
   void draw(){
       background(0);
       //BACKGROUND DRAWING
-      drawTrees(trees);
+    drawTrees(trees);
       //LIVES
-      player.drawLives();
+//      player.drawLives();
   }
  
   void keyPressed(){
