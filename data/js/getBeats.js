@@ -19,6 +19,10 @@ function loadRemote(path, callback) {
   fetch.send();
 }
 
+
+var beatsPerMinute;
+var beatsarray;
+
 function getBeats(file, callback) {
   loadRemote(file, function(data) {
 
@@ -26,10 +30,11 @@ function getBeats(file, callback) {
     var metaTrack = midiFile.tracks[0];
     var track = midiFile.tracks[1];
     var ticksPerBeat = midiFile.header.ticksPerBeat;
-    secondsPerBeat = 120;                             //GLOBAL for processing.
+    var secondsPerBeat = 120;                             //GLOBAL for processing.
+    beatsPerMinute = secondsPerBeat;
     var midi2beat = [36, 37, 38, 39, 40, 41, 42, 43];
     var beatInd = [0, 0, 0, 0, 0, 0, 0, 0];
-    beats = [[0], [0], [0], [0], [0], [0], [0], [0]]; //GLOBAL so processing can hit it
+    var beats = [[0], [0], [0], [0], [0], [0], [0], [0]];
     var i, j, n;
 
     // get info in terms of ticks
@@ -61,6 +66,7 @@ function getBeats(file, callback) {
       }
     }
     if (!secondsPerBeat) secondsPerBeat = 60 / 120;
+    
 
     var secondsPerTick = secondsPerBeat / ticksPerBeat; // GLOBAL, processing needs it.
     for (j = 0; j < beats.length; ++j) {
@@ -69,10 +75,13 @@ function getBeats(file, callback) {
         beats[j][i] *= secondsPerTick;
       }
     }
+    
     callback(beats);
+    beatsarray = beats;
     return beats;
-  });
+   });
 }
+
 
 // Usage:
 // getBeats("TwoTrack8measuresofEighthNotes.mid", console.log.bind(console));

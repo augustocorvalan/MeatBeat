@@ -1,16 +1,24 @@
 String[] levelNames = {"sounds/testmidi/samplemeatbeatbeat.mid",
                        "sounds/testmidi/TwoTrackBasicBeat.mid"};
                        
-String[][] soundNames = { {"music/meatbeatkick.ogg","music/meatbeatkick.ogg"},
+String[][] soundNames = { {"music/meatbeatkick.ogg","music/meatbeatkick.ogg","music/meatbeatkick.ogg"},
                           {"music/meatbeatkick.ogg","music/meatbeatkick.ogg"}};
+                          
+float[][] level1 = { {0,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727},
+                     {9.272718,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908},
+                     {17.727255,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454,0.545454},
+                     {},{},{},{},{}
+                   };
+
+float[][][] levelBeats = {level1, level1, level1};
                        
-Level buildLevel(int levelNum) {
+/*Level buildLevel(int levelNum) {
   getBeats(levelNames[levelNum]);
   float[][] lvlBeats = getBeats(levelNames[levelNum]);
   lvlBeats = beats;
   Level newLevel = new Level(lvlBeats,soundNames[levelNum]);
   return newLevel;
-}
+}*/
 
 int calcNumTracks(float[][] beatarray) {
     int tracks = 0;
@@ -29,7 +37,7 @@ class Level {
   
   Level(float[][] beats,  String[] sounds) {
     numTracks = calcNumTracks(beats);
-    tracks = new Track[numTracks];
+    tracks = new Track[numTracks+1];
     for(int i=0; i < numTracks; i++) {
       tracks[i] = new Track(beats[i],sounds[i]);
     }
