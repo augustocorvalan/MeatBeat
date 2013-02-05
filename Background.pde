@@ -30,7 +30,7 @@ void setupHills(Hill[] hills){
   float xOffset = 0;
   float heightOffset = 0;
   float widthOffset = 0;
-  for(var i = 0; i < number; i++){
+  for(int i = 0; i < number; i++){
     hills[i] = setupHill(xOffset, heightOffset, widthOffset);
     xOffset += WIDTH/number;
     heightOffset += 100;
@@ -46,7 +46,7 @@ void drawHills(Hill[] hills){
   fill(color(102, 153, 102));  //temp color for now
   strokeWeight(4);
   stroke(255);
-  for(var i = 0; i < hills.length; i++){
+  for(int i = 0; i < hills.length; i++){
     hills[i].draw();
   }
   popMatrix();
