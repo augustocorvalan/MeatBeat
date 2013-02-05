@@ -1,7 +1,9 @@
 class GameplayState extends BaseState{
+  int totalHills = 3;
+  Hill[] hills = new Hill[totalHills];
   int totalTrees = 3;
   Tree[] trees = new Tree[totalTrees];
-  PImage[] numbers = new PImage[10];  //holds the meat numbers
+  
   Level currentLevel;
   int currentTrackNum;
   Panel[] panelArray;
@@ -11,8 +13,13 @@ class GameplayState extends BaseState{
   
   void setup(){
     background(0);
-    //trees = setupTrees(totalTrees);  //tree setup
-//    numbers = cutUpNumbers(meatFont);
+    
+    /**
+      BACKGROUND SETUP
+    **/
+    setupHills(hills);  //hill setup
+//    trees = setupTrees(totalTrees);  //tree setup
+    
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
     //float[][] beats = {{0,0},{0,0}}
@@ -38,6 +45,13 @@ class GameplayState extends BaseState{
  
   void draw(){
       background(0);
+      
+      /** 
+        BACKGROUND DRAW
+      **/
+      drawHills(hills);
+//      drawTrees(trees);
+      
       for(int i = 0; i < currentTrackNum; i++){
         panelArray[i].draw();
         ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, 25, 25);
@@ -46,9 +60,7 @@ class GameplayState extends BaseState{
            chunkArray[i].velocity = -10;
         }
       }
-      
-      //BACKGROUND DRAWING
-    //drawTrees(trees);
+    
       //LIVES
 //      player.drawLives();
   }
