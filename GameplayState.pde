@@ -16,22 +16,20 @@ class GameplayState extends BaseState{
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
     //float[][] beats = {{0,0},{0,0}}
-    //beats = getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
+    //getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
    // beatsarray = getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
-    //println(beatstest[1][1]);
+    ///println(beatstest[1][1]);
     //var thebeats = getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
     //println("hello");
     //println(beatsPerMinute);
-    //println(beatsarray[1][0]);
-    currentLevel = new Level(levelBeats[0],soundNames[0]);
+    //println(beats[0][1]);
+    currentLevel = new Level(beatsarray,soundNames[0]);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
-      chunkArray[i] = new MeatChunk(xpos,  height/2);
-      chunkArray[i].velocity = .25;
-      chunkArray[i].gravity = .5;
+      chunkArray[i] = new MeatChunk(xpos,  height/2, .5, .25);
       panelArray[i] = new Panel(xpos, height - 50);
     }
   }

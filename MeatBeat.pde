@@ -24,6 +24,7 @@ PImage meatLife;  //image instance for meat life
 Player player;  //player instance
 
 void setup(){
+  getBeats(levelNames[0]);
   size(800, 600);
   background(255);
   currentState = FIRST_STATE;

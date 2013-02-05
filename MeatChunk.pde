@@ -3,9 +3,11 @@ class MeatChunk{
   float gravity;
   float velocity;
   
-  MeatChunk(int xPosition, int yPosition){
+  MeatChunk(int xPosition, int yPosition, float g, float vy){
     this.xPosition = xPosition;
-    this.yPosition = yPosition; 
+    this.yPosition = yPosition;
+    gravity = g;
+    velocity = vy; 
   }
   
   void increment(){
