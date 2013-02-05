@@ -1,4 +1,7 @@
 class GameplayState extends BaseState{
+  /** 
+    BACKGROUND VARIABLES
+  **/
   int totalHills = 3;
   Hill[] hills = new Hill[totalHills];
   int totalTrees = 3;
@@ -19,6 +22,9 @@ class GameplayState extends BaseState{
     **/
     setupHills(hills);  //hill setup
 //    trees = setupTrees(totalTrees);  //tree setup
+
+    /** LIVES **/
+    player = new Player(INITIAL_LIVES);  //new player instance
     
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
@@ -51,6 +57,9 @@ class GameplayState extends BaseState{
       **/
       drawHills(hills);
 //      drawTrees(trees);
+
+      /** LIVES **/
+      player.drawLives();
       
       for(int i = 0; i < currentTrackNum; i++){
         panelArray[i].draw();
@@ -62,7 +71,7 @@ class GameplayState extends BaseState{
       }
     
       //LIVES
-//      player.drawLives();
+
   }
  
   void keyPressed(){
@@ -112,10 +121,10 @@ class GameplayState extends BaseState{
           }
         }
       }
-      break; 
+      break;
     }
   }
- 
+    
   void cleanup(){
    
   } 
