@@ -39,18 +39,19 @@ class Tree{
 Tree[] setupTrees(int treeTotal){
   int tallestTree = 100;
   int shortestTree = 55;
-  int xMin = -WIDTH + 30;
-  int xMax = 0;
+//  int xMin = -WIDTH + 30;
+//  int xMax = 0;
+  int x = 0;
   Tree[] trees = new Tree[treeTotal]; 
   for(int i = 0; i < treeTotal; i++){
     //randomly generate height and x between range 
     int height = floor(random(shortestTree, tallestTree));
-    int x = floor(random(xMin, xMax));
-//    console.log("random x:" + x);
+//    int x = floor(random(xMin, xMax));
+//    x += 100;
     int y = HEIGHT - height;
     //increase the x range
-    xMin += 100;
-    xMax += 100;
+//    xMin += 100;
+//    xMax += 100;
     trees[i] = new Tree(x, y, height);
     //randomly assign some trees a different starting angle
     if(random(0, treeTotal/3) == 1) trees[i].setAngle(30);   
@@ -75,8 +76,8 @@ void drawTrees(Tree[] trees){
    t.setAngle(angle);
   }
   popMatrix();
-  //reset counter
-  if(counter >= frameCount/(BPM/60)) counter = 0;
+  //once we're done drawing, set stroke back to normal
+  stroke(255);
 }
 
 //@param height of tree
@@ -97,18 +98,17 @@ void drawTree(int x, int y, int height, int i, float angle){
     blue = treeBlue;
   }
   stroke(red, green, blue, 50);
-  strokeWeight(3 + cos(angle));
-  // Let's pick an angle 0 to 90 degrees based on the mouse position
+  strokeWeight(8 + frameCount*0.001);
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;
   // Convert it to radians
   int gap = WIDTH/(length+1);
   translate(gap, 0);
   float theta = radians(a);
-  // Start the tree from the bottom of the screen
   // Start the recursive branching!
   //0 - 45
   branch(height, theta);
+  strokeWeight(1);
 }  
 
 void branch(float h, float theta) {
@@ -117,7 +117,7 @@ void branch(float h, float theta) {
   
   // All recursive functions must have an exit condition!!!!
   // Here, ours is when the length of the branch is 2 pixels or less
-  if (h > 2) {
+  if (h > 8) {
     pushMatrix();    // Save the current state of transformation (i.e. where are we now)
     rotate(theta);   // Rotate by theta
  
