@@ -23,7 +23,7 @@ function loadRemote(path, callback) {
 var beatsPerMinute;
 var beatsarray;
 
-function getBeats(file, callback) {
+function getBeats(file) {
   loadRemote(file, function(data) {
 
     var midiFile = MidiFile(data);
@@ -76,10 +76,8 @@ function getBeats(file, callback) {
       }
     }
     
-    callback(beats);
     beatsarray = beats;
-    return beats;
-   });
+  } );
 }
 
 

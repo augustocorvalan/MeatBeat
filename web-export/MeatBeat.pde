@@ -24,6 +24,7 @@ PImage meatLife;  //image instance for meat life
 Player player;  //player instance
 
 void setup(){
+  getBeats(levelNames[0]);
   size(800, 600);
   background(255);
   currentState = FIRST_STATE;
@@ -70,166 +71,59 @@ BaseState createState(int state){
       return null;
   } 
 }
-//WAVE SETTING VARIABLES
-float density = .75;
-float friction = 1.14;
-float mouse_pull = 0.09; // The strength at which the mouse pulls particles within the AOE
-int aoe = 200; // Area of effect for mouse pull
-int detail = round( WIDTH / 60 ); // The number of particles used to build up the wave
-float water_density = 1.07;
-float air_density = 1.02;
-int twitch_interval = 2000; // The interval between random impulses being inserted into the wave to keep it moving
-
-
-/**
- HILLS
- **/
-class Particle {
-  int x, y, origX, origY, forceX, forceY, mass;
-  float vX, vY;
-  Particle(int x, int y, int origX, int origY, float vX, float vY, int forceX, int forceY, int mass){
+class Hill{
+  float x, y, width, height, start, stop;
+  Hill(float x, float y, float width, float height, float start, float stop){
     this.x = x;
     this.y = y;
-    this.origX = origX;
-    this.origY = origY;
-    this.vX = vX;
-    this.vY = vY;
-    this.forceX = forceX;
-    this.forceY = forceY;
-    this.mass = mass;
+    this.width = width;
+    this.height = height;
+    this.start = start;
+    this.stop = stop;
+  }
+  void draw(){
+    arc(x, y, width, height, start, stop);
   }
 }
 
-Particle[] setupHill(){ 
-  /** Wave settings */
-  float density = .75;
-  float friction = 1.14;
-  float mouse_pull = 0.09; // The strength at which the mouse pulls particles within the AOE
-  int aoe = 200; // Area of effect for mouse pull
-  int detail = round( WIDTH / 60 ); // The number of particles used to build up the wave
-  float water_density = 1.07;
-  float air_density = 1.02;
-  int twitch_interval = 2000; // The interval between random impulses being inserted into the wave to keep it moving
-    
-  Particle[] particles = new Particle[detail+1];      
-  // Generate our wave particles
-  for(int i = 0; i < particles.length; i++) {
-    int x = round(WIDTH / (detail-4) * (i-2));
-    int y = round(HEIGHT*0.5);
-    int originalX = 0;
-    int originalY = round(HEIGHT * 0.5);
-    float velocityX = 0;
-    float velocityY = floor(random(0, 3));
-    int forceX = 0;
-    int forceY = 0;
-    int mass = 10;
-    particles[i] = new Particle(x, y, originalX, originalY, velocityX, velocityY, forceX, forceY, mass);
-  }
-  return particles; 
-}
-
-void drawHill(Particle[] particles) {
-  
-//    int x = round(WIDTH*0.5);
-  int x = 0;
-  int y = round(HEIGHT*0.2);
-  float w = WIDTH;
-  float h = HEIGHT - HEIGHT*0.2;
-  color blue = color(0, 170, 187, 0);
-  color green = color(0, 200, 250, 0);  
-  int y_axis = 1;
-  setGradient(x, y, w, h, blue, green, y_axis);
-  
-  int len = particles.length;          
-//  var current, previous, next;
-//      
-//  for(int i = 0; i < len; i++ ) {
-//    current = particles[i];
-//    previous = particles[i-1];
-//    next = particles[i+1];
-//    
-//    if (previous && next) {
-//      
-//      var forceY = 0;
-//      
-//      forceY += -DENSITY * ( previous.y - current.y );
-//      forceY += DENSITY * ( current.y - next.y );
-//      forceY += DENSITY/15 * ( current.y - current.original.y );
-//      
-//      current.velocity.y += - ( forceY / current.mass ) + current.force.y;
-//      current.velocity.y /= FRICTION;
-//      current.force.y /= FRICTION;
-//      current.y += current.velocity.y;
-//      
-//      var distance = DistanceBetween( mp, current );
-//      
-//      if( distance < AOE ) {
-//        var distance = DistanceBetween( mp, {x:current.original.x, y:current.original.y} );
-//        
-//        ms.x = ms.x * .98;
-//        ms.y = ms.y * .98;
-//        
-//        current.force.y += (MOUSE_PULL * ( 1 - (distance / AOE) )) * ms.y;
-//      }
-//      
-//      // cx, cy, ax, ay
-//      context.quadraticCurveTo(previous.x, previous.y, previous.x + (current.x - previous.x) / 2, previous.y + (current.y - previous.y) / 2);
-//    } 
-//  }
-  
+Hill setupHill(float xOffset, float heightOffset, float widthOffset){
+  float x = 2*WIDTH/10 + xOffset;
+  float y = HEIGHT/10 + HEIGHT * 0.9;
+  float width = WIDTH/2 + widthOffset;
+  float height =  HEIGHT * 1.5 + heightOffset;
+  float start = -PI;
+  float stop = 0;
+  Hill h = new Hill(x, y, width, height, start, stop);
+  return h;
 }
 
 
-void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ){
-  // calculate differences between color components 
-  float deltaR = red(c2)-red(c1);
-  float deltaG = green(c2)-green(c1);
-  float deltaB = blue(c2)-blue(c1);
-  
-  int Y_AXIS = 1;
-  int X_AXIS = 2;
-  // choose axis
-  if(axis == Y_AXIS){
-    /*nested for loops set pixels
-     in a basic table structure */
-    // column
-    for (int i=x; i<=(x+w); i++){
-      // row
-      for (int j = y; j<=(y+h); j++){
-        color c = color(
-          (red(c1)+(j-y)*(deltaR/h)),
-          (green(c1)+(j-y)*(deltaG/h)),
-          (blue(c1)+(j-y)*(deltaB/h)) 
-        );
-        set(i, j, c);
-      }
-    }  
-  }  
-  else if(axis == X_AXIS){
-    // column 
-    for (int i=y; i<=(y+h); i++){
-      // row
-      for (int j = x; j<=(x+w); j++){
-        color c = color(
-          (red(c1)+(j-x)*(deltaR/h)),
-          (green(c1)+(j-x)*(deltaG/h)),
-          (blue(c1)+(j-x)*(deltaB/h)) 
-        );
-        set(j, i, c);
-      }
-    }  
+void setupHills(Hill[] hills){
+  int number = hills.length;
+  float xOffset = 0;
+  float heightOffset = 0;
+  float widthOffset = 0;
+  for(int i = 0; i < number; i++){
+    hills[i] = setupHill(xOffset, heightOffset, widthOffset);
+    xOffset += WIDTH/number;
+    heightOffset += 100;
+    widthOffset += 25;
+    if(int(random(2)) == 1) heightOffset *= -1;  //randomly make half shorter
+    if(int(random(2)) == 1) widthOffset *= -1;  //randomly make half skinnier
   }
 }
 
-//void quadraticBezierVertex(cpx, cpy, x, y) {
-//  var cp1x = prevX + 2.0/3.0*(cpx - prevX);
-//  var cp1y = prevY + 2.0/3.0*(cpy - prevY);
-//  var cp2x = cp1x + (x - prevX)/3.0;
-//  var cp2y = cp1y + (y - prevY)/3.0;
-// 
-//  // finally call cubic Bezier curve function
-//  bezierVertex(cp1x, cp1y, cp2x, cp2y, x, y);
-//};
+void drawHills(Hill[] hills){
+  pushMatrix();
+  //Style stuff
+  fill(color(102, 153, 102));  //temp color for now
+  strokeWeight(4);
+  stroke(255);
+  for(int i = 0; i < hills.length; i++){
+    hills[i].draw();
+  }
+  popMatrix();
+}
 class BaseState{
   void setup(){}
  
@@ -239,6 +133,9 @@ class BaseState{
   
   void keyPressed(){}
 }
+color[] colors = {
+  //add colors here
+};
 class FinishState extends BaseState{
   int CHUNK_NUMBER = 4;
   MeatChunk[] chunkArray;
@@ -327,9 +224,14 @@ class FinishState extends BaseState{
   } 
 }
 class GameplayState extends BaseState{
+  /** 
+    BACKGROUND VARIABLES
+  **/
+  int totalHills = 3;
+  Hill[] hills = new Hill[totalHills];
   int totalTrees = 3;
   Tree[] trees = new Tree[totalTrees];
-  PImage[] numbers = new PImage[10];  //holds the meat numbers
+  
   Level currentLevel;
   int currentTrackNum;
   Panel[] panelArray;
@@ -339,33 +241,41 @@ class GameplayState extends BaseState{
   
   void setup(){
     background(0);
-    //trees = setupTrees(totalTrees);  //tree setup
-//    numbers = cutUpNumbers(meatFont);
+    
+    /**
+      BACKGROUND SETUP
+    **/
+    setupHills(hills);  //hill setup
+//    trees = setupTrees(totalTrees);  //tree setup
+
+    /** LIVES **/
+    player = new Player(INITIAL_LIVES);  //new player instance
+    
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
-    //float[][] beats = {{0,0},{0,0}}
-    //beats = getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
-   // beatsarray = getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
-    //println(beatstest[1][1]);
-    //var thebeats = getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
-    //println("hello");
-    //println(beatsPerMinute);
-    //println(beatsarray[1][0]);
-    currentLevel = new Level(levelBeats[0],soundNames[0]);
+    currentLevel = new Level(beatsarray,soundNames[0]);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
-      chunkArray[i] = new MeatChunk(xpos,  height/2);
-      chunkArray[i].velocity = .25;
-      chunkArray[i].gravity = .5;
+      chunkArray[i] = new MeatChunk(xpos,  height/2, .5, .25);
       panelArray[i] = new Panel(xpos, height - 50);
     }
   }
  
   void draw(){
       background(0);
+      
+      /** 
+        BACKGROUND DRAW
+      **/
+      drawHills(hills);
+//      drawTrees(trees);
+
+      /** LIVES **/
+      player.drawLives();
+      
       for(int i = 0; i < currentTrackNum; i++){
         panelArray[i].draw();
         ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, 25, 25);
@@ -374,11 +284,9 @@ class GameplayState extends BaseState{
            chunkArray[i].velocity = -10;
         }
       }
-      
-      //BACKGROUND DRAWING
-    //drawTrees(trees);
+    
       //LIVES
-//      player.drawLives();
+
   }
  
   void keyPressed(){
@@ -428,10 +336,10 @@ class GameplayState extends BaseState{
           }
         }
       }
-      break; 
+      break;
     }
   }
- 
+    
   void cleanup(){
    
   } 
@@ -499,9 +407,11 @@ class MeatChunk{
   float gravity;
   float velocity;
   
-  MeatChunk(int xPosition, int yPosition){
+  MeatChunk(int xPosition, int yPosition, float g, float vy){
     this.xPosition = xPosition;
-    this.yPosition = yPosition; 
+    this.yPosition = yPosition;
+    gravity = g;
+    velocity = vy; 
   }
   
   void increment(){
@@ -696,124 +606,25 @@ class Panel{
   }
 }
 class Player{
-   ArrayList<Life> lives;
-   Player(int number, PImage lifeImage){
-     this.lives = new ArrayList();
-     for(int i = 0; i < number; i++){
-       this.lives.add(new Life(lifeImage));
-     }
+   int lives;
+   Player(int lives){
+     this.lives = lives; 
    }
    void decreaseLives(){
-       lives.get(lives.size() - 1).setAlive(false);  //mark the last life for destruction
+     lives--;
    }
-   ArrayList getLives(){
+   int getLives(){
      return lives;
    }
-  void setupLives(){
-    int x = 0;
-    int y = 0;
-    for(int i = 0; i < lives.size(); i++){
-      Life life = lives.get(i);
-      life.setX(x);
-      life.setY(y);
-      x += life.getTrueWidth() + 5;
-      //start a new row
-      if(i == 4){
-        x = 0;
-        y += life.getTrueHeight() + 5;
-      }
-    }
-  }
   void drawLives(){
-    for(int i = 0; i < lives.size(); i++){
-      pushMatrix();
-      Life life = lives.get(i);
-      int x = life.getX();
-      int y = life.getY();
-      int op = life.getOpacity();
-      PImage img = life.getImage();
-      int width = life.getTrueWidth();
-      int height = life.getTrueHeight();
-      if(life.isAlive() == false){
-        if(op <= 155){  //if it's barely visible, remove it
-          lives.remove(i);
-        } else{
-          op -= 10;
-          life.setOpacity(op);
-          tint(255, op);
-        }
-      }
-      image(img, x, y, width, height);
-      popMatrix();
-    }
-    tint(255, 255);  //bring back transparency
+    pushMatrix();
+    fill(255);
+    image(meatLife, WIDTH/10, HEIGHT/120, 38, 38);  //meatball
+    text("x", WIDTH/12, HEIGHT/15); //x text
+    text(lives, WIDTH/25, HEIGHT/15);  //number of lives
+    popMatrix();
   }
 }
-
-class Life{
-  int x, y, opacity;
-  PImage lifeImg;
-  int lifeWidth = 606;  //original image width
-  int lifeHeight = 612;  //original image height
-  boolean alive;  //is life marked for destruction?
-  Life(PImage img){
-    this.x = 0;
-    this.y = 0;
-    this.opacity = 255;
-    this.lifeImg = img;
-    alive = true;
-  }
-  void setX(int x){
-    this.x = x;
-  }
-  void setY(int y){
-    this.y = y;
-  }
-  void setOpacity(int op){
-    this.opacity = op;
-  }
-  int getX(){
-    return x;
-  }
-  int getY(){
-    return y;
-  }
-  int getOpacity(){
-    return opacity;
-  }
-  PImage getImage(){
-    return lifeImg;
-  }
-  int getTrueWidth(){  //cut these meatballs down a size
-    return lifeWidth/12;
-  }
-  int getTrueHeight(){
-    return lifeHeight/12;
-  }
-  boolean isAlive(){
-    return alive;
-  }
-  void setAlive(boolean b){
-    alive = b;
-  }
-}
-
-//void drawLives(PImage lifeImg){
-//  int x = 0;
-//  int y = 0;
-//  int lifeWidth = 606;  //original image width
-//  int lifeHeight = 612;  //original image height
-//  int lives = player.getLives();
-//  for(int i = 0; i < lives; i++){
-//    image(lifeImg, x, y, lifeWidth/12, lifeHeight/12);
-//    x += lifeWidth/12 + 5;
-//    //start a new row
-//    if(i == 4){
-//      x = 0;
-//      y += lifeHeight/12 + 5;
-//    }
-//  }
-//}
 class TitleState extends BaseState{
   void setup(){
     background(255, 0, 0);
