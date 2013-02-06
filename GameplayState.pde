@@ -28,15 +28,8 @@ class GameplayState extends BaseState{
     
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
-    //float[][] beats = {{0,0},{0,0}}
-    //getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
-   // beatsarray = getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
-    ///println(beatstest[1][1]);
-    //var thebeats = getBeats("sounds/testmidi/samplemeatbeatbeat.mid",console.log.bind(console));
-    //println("hello");
-    //println(beatsPerMinute);
-    //println(beats[0][1]);
     currentLevel = new Level(beatsarray,soundNames[0]);
+    getBeats(levelNames[1]);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
