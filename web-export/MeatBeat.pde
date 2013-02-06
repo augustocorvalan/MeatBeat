@@ -10,7 +10,7 @@ static final int STATE_COUNT = 3;
 
 static final int INITIAL_LIVES = 10;
 
-static final int MAX_FRAME_RATE = 60;
+static final int MAX_FRAME_RATE = 30;
 int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
@@ -24,6 +24,7 @@ PImage meatLife;  //image instance for meat life
 Player player;  //player instance
 
 void setup(){
+  frameRate(MAX_FRAME_RATE);
   getBeats(levelNames[0]);
   size(800, 600);
   background(255);
@@ -45,7 +46,7 @@ void setup(){
 }
 
 void draw(){
-  fps = (fps + 1)%MAX_FRAME_RATE;  //update fps
+  //fps = (fps + 1)%MAX_FRAME_RATE;  //update fps
   states[currentState].draw();
 }
 
@@ -254,39 +255,36 @@ class GameplayState extends BaseState{
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
     currentLevel = new Level(beatsarray,soundNames[0]);
+    getBeats(levelNames[1]);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
-      chunkArray[i] = new MeatChunk(xpos,  height/2, .5, .25);
+      chunkArray[i] = new MeatChunk(xpos, height/2, 0, 0, currentLevel.getTrack(i));
       panelArray[i] = new Panel(xpos, height - 50);
     }
   }
  
   void draw(){
-      background(0);
-      
+      background(0);      
       /** 
         BACKGROUND DRAW
       **/
-      drawHills(hills);
+      //drawHills(hills);
 //      drawTrees(trees);
 
       /** LIVES **/
-      player.drawLives();
+      //player.drawLives();
       
       for(int i = 0; i < currentTrackNum; i++){
         panelArray[i].draw();
         ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, 25, 25);
-        chunkArray[i].increment();
-        if(chunkArray[i].yPosition >= 600){
+        chunkArray[i].move();
+        /*if(chunkArray[i].yPosition >= 600){
            chunkArray[i].velocity = -10;
-        }
+        }*/
       }
-    
-      //LIVES
-
   }
  
   void keyPressed(){
@@ -298,7 +296,7 @@ class GameplayState extends BaseState{
           if(panelArray[0].canRedraw){
             panelArray[0].canRedraw = false;
             if((chunkArray[0].yPosition >= (panelArray[0].origY + threshold) && !panelArray[0].canRedraw)){
-               chunkArray[0].velocity = -15;
+               //chunkArray[0].velocity = -15;
                playSound(currentLevel.getTrack(0).getSound());
             }
           }
@@ -309,7 +307,7 @@ class GameplayState extends BaseState{
         if(panelArray[1].canRedraw){
           panelArray[1].canRedraw = false;
           if((chunkArray[1].yPosition >= (panelArray[1].origY + threshold) && !panelArray[1].canRedraw)){
-               chunkArray[1].velocity = -15;
+               //chunkArray[1].velocity = -15;
                playSound(currentLevel.getTrack(1).getSound());
           }
         }
@@ -320,7 +318,7 @@ class GameplayState extends BaseState{
         if(panelArray[2].canRedraw){
           panelArray[2].canRedraw = false;
           if((chunkArray[2].yPosition >= (panelArray[2].origY + threshold) && !panelArray[2].canRedraw)){
-               chunkArray[2].velocity = -15;
+               //chunkArray[2].velocity = -15;
                playSound(currentLevel.getTrack(2).getSound());
           }
         }
@@ -331,7 +329,7 @@ class GameplayState extends BaseState{
         if(panelArray[3].canRedraw){
           panelArray[3].canRedraw = false;
           if((chunkArray[3].yPosition >= (panelArray[3].origY + threshold) && !panelArray[3].canRedraw)){
-               chunkArray[3].velocity = -15;
+               //chunkArray[3].velocity = -15;
                playSound(currentLevel.getTrack(3).getSound());
           }
         }
@@ -406,18 +404,68 @@ class MeatChunk{
   int xPosition, yPosition;
   float gravity;
   float velocity;
+  int lastFrame;
+  Track track;
+  int lastBounce;
+  int bounceWait;
+  int currentBeat;
+  int unitHeight = HEIGHT / 2;
+  int ground = HEIGHT - 15;
   
-  MeatChunk(int xPosition, int yPosition, float g, float vy){
+  MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
     this.yPosition = yPosition;
-    gravity = g;
-    velocity = vy; 
+    this.gravity = g;
+    this.velocity = vy;
+    this.lastFrame = 0;
+    this.track = t;
+    this.lastBounce = 0;
+    this.bounceWait = 0;
+    this.currentBeat = 0;
   }
   
   void increment(){
-    yPosition += velocity;
-    velocity += gravity;
+    this.yPosition += velocity;
+    this.velocity += gravity;
   }
+  
+  void move() {
+    if ((millis()-lastBounce) > bounceWait) {
+      doBounce();
+    }
+    else {
+      doUpdate();
+    }
+  }
+  
+  void bounce(float period, float h) {
+    this.gravity = 8 * h / (period*period);
+    this.velocity = -this.gravity * period / 2;
+    this.yPosition = ground; // reset y to ground to prevent drifting
+  }
+  
+  void update(float dt) {
+    // Euler integration (should be changed to Verlet or something)
+    this.velocity += this.gravity * dt;
+    this.yPosition += this.velocity * dt;
+  }
+  
+  void doBounce() {
+    lastBounce = millis();
+    float period = track.getBeat(currentBeat);
+    bounce(period, track.getBeat(currentBeat) * unitHeight);
+    //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
+    currentBeat = (currentBeat + 1) % track.getBeats().length;
+    bounceWait = 1000*period; // period in ms.
+  }
+  
+  void doUpdate() {
+    int dt = millis() - lastFrame;
+    lastFrame += dt;
+    update(dt/1000);
+    //setTimeout(loop, 1000 / 60); // 30 fps
+  }
+  
 }
 PImage meatFont; //used to display the score 
 
