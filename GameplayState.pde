@@ -35,34 +35,30 @@ class GameplayState extends BaseState{
     chunkArray = new MeatChunk[currentTrackNum];
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
-      chunkArray[i] = new MeatChunk(xpos,  height/2, .5, .25);
+      chunkArray[i] = new MeatChunk(xpos, height/2, 0, 0, currentLevel.getTrack(i));
       panelArray[i] = new Panel(xpos, height - 50);
     }
   }
  
   void draw(){
-      background(0);
-      
+      background(0);      
       /** 
         BACKGROUND DRAW
       **/
-      drawHills(hills);
+      //drawHills(hills);
 //      drawTrees(trees);
 
       /** LIVES **/
-      player.drawLives();
+      //player.drawLives();
       
       for(int i = 0; i < currentTrackNum; i++){
         panelArray[i].draw();
         ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, 25, 25);
-        chunkArray[i].increment();
-        if(chunkArray[i].yPosition >= 600){
+        chunkArray[i].move();
+        /*if(chunkArray[i].yPosition >= 600){
            chunkArray[i].velocity = -10;
-        }
+        }*/
       }
-    
-      //LIVES
-
   }
  
   void keyPressed(){
@@ -74,7 +70,7 @@ class GameplayState extends BaseState{
           if(panelArray[0].canRedraw){
             panelArray[0].canRedraw = false;
             if((chunkArray[0].yPosition >= (panelArray[0].origY + threshold) && !panelArray[0].canRedraw)){
-               chunkArray[0].velocity = -15;
+               //chunkArray[0].velocity = -15;
                playSound(currentLevel.getTrack(0).getSound());
             }
           }
@@ -85,7 +81,7 @@ class GameplayState extends BaseState{
         if(panelArray[1].canRedraw){
           panelArray[1].canRedraw = false;
           if((chunkArray[1].yPosition >= (panelArray[1].origY + threshold) && !panelArray[1].canRedraw)){
-               chunkArray[1].velocity = -15;
+               //chunkArray[1].velocity = -15;
                playSound(currentLevel.getTrack(1).getSound());
           }
         }
@@ -96,7 +92,7 @@ class GameplayState extends BaseState{
         if(panelArray[2].canRedraw){
           panelArray[2].canRedraw = false;
           if((chunkArray[2].yPosition >= (panelArray[2].origY + threshold) && !panelArray[2].canRedraw)){
-               chunkArray[2].velocity = -15;
+               //chunkArray[2].velocity = -15;
                playSound(currentLevel.getTrack(2).getSound());
           }
         }
@@ -107,7 +103,7 @@ class GameplayState extends BaseState{
         if(panelArray[3].canRedraw){
           panelArray[3].canRedraw = false;
           if((chunkArray[3].yPosition >= (panelArray[3].origY + threshold) && !panelArray[3].canRedraw)){
-               chunkArray[3].velocity = -15;
+               //chunkArray[3].velocity = -15;
                playSound(currentLevel.getTrack(3).getSound());
           }
         }

@@ -10,7 +10,7 @@ static final int STATE_COUNT = 3;
 
 static final int INITIAL_LIVES = 10;
 
-static final int MAX_FRAME_RATE = 60;
+static final int MAX_FRAME_RATE = 30;
 int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
@@ -24,6 +24,7 @@ PImage meatLife;  //image instance for meat life
 Player player;  //player instance
 
 void setup(){
+  frameRate(MAX_FRAME_RATE);
   getBeats(levelNames[0]);
   size(800, 600);
   background(255);
@@ -45,7 +46,7 @@ void setup(){
 }
 
 void draw(){
-  fps = (fps + 1)%MAX_FRAME_RATE;  //update fps
+  //fps = (fps + 1)%MAX_FRAME_RATE;  //update fps
   states[currentState].draw();
 }
 
