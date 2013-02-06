@@ -1,0 +1,21 @@
+.545454 seconds  -> h = 300  -> g = 8068.28  -> vel = -2200.22  -> vel loss every frame = 135  -> 
+.545454 seconds
+.545454 seconds
+.272727 seconds  -> h = 225 -> g = 24204.84  -> vel = -3300.33
+.272727 seconds
+
+->
+
+1 beat
+1 beat
+1 beat
+1/2 beat
+1/2 beat
+
+->
+
+standard dt at ~60 fps = 0.01667
+
+PHYSICS:
+
+max height = Vo*(period/2) - (1/2)*(g)*(period/2)^2

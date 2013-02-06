@@ -19,12 +19,16 @@ int currentState;
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
 
+static final int GROUND = HEIGHT - 50;
+
 PImage meatLife;  //image instance for meat life
 PShape cloudImage;  //image for the cloud
 
 Player player;  //player instance
 
 void setup(){
+  frameRate(MAX_FRAME_RATE);
+  getBeats(levelNames[0]);
   size(800, 600);
   background(255);
   currentState = FIRST_STATE;
@@ -46,7 +50,7 @@ void setup(){
 }
 
 void draw(){
-  fps = (fps + 1)%MAX_FRAME_RATE;  //update fps
+  //fps = (fps + 1)%MAX_FRAME_RATE;  //update fps
   states[currentState].draw();
 }
 
