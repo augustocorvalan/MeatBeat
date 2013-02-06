@@ -10,7 +10,7 @@ static final int STATE_COUNT = 3;
 
 static final int INITIAL_LIVES = 10;
 
-static final int MAX_FRAME_RATE = 30;
+static final int MAX_FRAME_RATE = 60;
 int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
@@ -18,6 +18,8 @@ int currentState;
 
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
+
+static final int GROUND = HEIGHT - 50;
 
 PImage meatLife;  //image instance for meat life
 
@@ -238,7 +240,7 @@ class GameplayState extends BaseState{
   Panel[] panelArray;
   MeatChunk[] chunkArray;
   int offset = 60;
-  float threshold = 5;
+  float threshold = 25;
   
   void setup(){
     background(0);
@@ -261,13 +263,14 @@ class GameplayState extends BaseState{
     chunkArray = new MeatChunk[currentTrackNum];
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
-      chunkArray[i] = new MeatChunk(xpos, height/2, 0, 0, currentLevel.getTrack(i));
-      panelArray[i] = new Panel(xpos, height - 50);
+      chunkArray[i] = new MeatChunk(xpos, GROUND, 0, 0, currentLevel.getTrack(i));
+      panelArray[i] = new Panel(xpos, GROUND+(PANEL_HEIGHT/2));
     }
   }
  
   void draw(){
-      background(0);      
+      background(0);
+          
       /** 
         BACKGROUND DRAW
       **/
@@ -275,12 +278,16 @@ class GameplayState extends BaseState{
 //      drawTrees(trees);
 
       /** LIVES **/
-      //player.drawLives();
+      player.drawLives();
+      
+      stroke(255);
+      line(0,GROUND,width,GROUND);  // line possibly temp for location of GROUND.
       
       for(int i = 0; i < currentTrackNum; i++){
-        panelArray[i].draw();
-        ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, 25, 25);
+        fill(255, 51, 51);
+        ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, MEAT_WIDTH, MEAT_HEIGHT);
         chunkArray[i].move();
+        panelArray[i].draw();
         /*if(chunkArray[i].yPosition >= 600){
            chunkArray[i].velocity = -10;
         }*/
@@ -294,8 +301,8 @@ class GameplayState extends BaseState{
       case 'j':
         if(currentTrackNum >= 1){
           if(panelArray[0].canRedraw){
-            panelArray[0].canRedraw = false;
-            if((chunkArray[0].yPosition >= (panelArray[0].origY + threshold) && !panelArray[0].canRedraw)){
+            panelArray[0].drawIt();
+            if((abs((chunkArray[0].yPosition+MEAT_HEIGHT/2) - (panelArray[0].origY-PANEL_HEIGHT/2)) <= threshold)) { //&& !panelArray[0].canRedraw)){
                //chunkArray[0].velocity = -15;
                playSound(currentLevel.getTrack(0).getSound());
             }
@@ -306,7 +313,7 @@ class GameplayState extends BaseState{
       if(currentTrackNum >= 2){
         if(panelArray[1].canRedraw){
           panelArray[1].canRedraw = false;
-          if((chunkArray[1].yPosition >= (panelArray[1].origY + threshold) && !panelArray[1].canRedraw)){
+          if((abs((chunkArray[1].yPosition+MEAT_HEIGHT/2) - (panelArray[1].origY-PANEL_HEIGHT/2)) <= threshold)) {
                //chunkArray[1].velocity = -15;
                playSound(currentLevel.getTrack(1).getSound());
           }
@@ -317,7 +324,7 @@ class GameplayState extends BaseState{
       if(currentTrackNum >= 3){
         if(panelArray[2].canRedraw){
           panelArray[2].canRedraw = false;
-          if((chunkArray[2].yPosition >= (panelArray[2].origY + threshold) && !panelArray[2].canRedraw)){
+          if((abs((chunkArray[2].yPosition+MEAT_HEIGHT/2) - (panelArray[2].origY-PANEL_HEIGHT/2)) <= threshold)) {
                //chunkArray[2].velocity = -15;
                playSound(currentLevel.getTrack(2).getSound());
           }
@@ -335,6 +342,7 @@ class GameplayState extends BaseState{
         }
       }
       break;
+     case 'q': println(frameRate); break;
     }
   }
     
@@ -400,24 +408,25 @@ class Level {
   }
   
 }
+static final int MEAT_WIDTH = 25;
+static final int MEAT_HEIGHT = 25;
+static final int DEFAULT_BOUNCE_HEIGHT = 0;   
+
 class MeatChunk{
   int xPosition, yPosition;
   float gravity;
   float velocity;
-  int lastFrame;
   Track track;
   int lastBounce;
   int bounceWait;
   int currentBeat;
-  int unitHeight = HEIGHT / 2;
-  int ground = HEIGHT - 15;
+  float unitHeight = height / 3;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
-    this.yPosition = yPosition;
+    this.yPosition = yPosition - MEAT_HEIGHT/2; // get bottom of meat ball to ground.
     this.gravity = g;
     this.velocity = vy;
-    this.lastFrame = 0;
     this.track = t;
     this.lastBounce = 0;
     this.bounceWait = 0;
@@ -441,28 +450,32 @@ class MeatChunk{
   void bounce(float period, float h) {
     this.gravity = 8 * h / (period*period);
     this.velocity = -this.gravity * period / 2;
-    this.yPosition = ground; // reset y to ground to prevent drifting
+    this.yPosition = GROUND - MEAT_HEIGHT/2; // reset y to ground to prevent drifting
   }
   
   void update(float dt) {
     // Euler integration (should be changed to Verlet or something)
-    this.velocity += this.gravity * dt;
-    this.yPosition += this.velocity * dt;
+    int steps = 12;  // more steps makes integration smoother. if we can afford it we shouldd do it.
+    float delta = dt/steps;
+    for(int i=0; i<steps;i++) {
+      this.velocity += this.gravity * delta;
+      this.yPosition += this.velocity * delta;
+    }
   }
   
   void doBounce() {
     lastBounce = millis();
     float period = track.getBeat(currentBeat);
-    bounce(period, track.getBeat(currentBeat) * unitHeight);
+    float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / spb);
+    bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     currentBeat = (currentBeat + 1) % track.getBeats().length;
-    bounceWait = 1000*period; // period in ms.
+    bounceWait = 1000*period; // period in ms
   }
   
   void doUpdate() {
-    int dt = millis() - lastFrame;
-    lastFrame += dt;
-    update(dt/1000);
+    float dt = 1 / frameRate;
+    update(dt);
     //setTimeout(loop, 1000 / 60); // 30 fps
   }
   
@@ -620,6 +633,9 @@ void branch(float h, float theta) {
   }
 }
 
+static final int PANEL_WIDTH = 50;
+static final int PANEL_HEIGHT = 20;
+
 class Panel{
   float xPosition, yPosition, origY;
   float angle = 0;
@@ -628,6 +644,8 @@ class Panel{
   int opacityInterval = round(255/frameRate);
   boolean canRedraw;
   boolean canRepress;
+  int lastDraw;
+  int waitTime = 100; // ms between allowable presses
   
   Panel(float xPosition, float yPosition){
     this.xPosition = xPosition;
@@ -636,19 +654,28 @@ class Panel{
     opacity = 255;
     canRedraw = true;
     canRepress = true;
+    lastDraw = 0;
+  }
+  
+  void drawIt() {
+    canRedraw = false;
+    lastDraw = millis();
+    fill(213, 143, 45, opacity);
+    rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT); 
   }
   
   void draw(){
     if(!canRedraw){
       noStroke();        
       fill(213, 143, 45, opacity);
-      rect(xPosition, yPosition, 50, 20);
-      yPosition = yPosition + levelInterval;
+      rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT);
+      //yPosition = yPosition + levelInterval;
       opacity = opacity - opacityInterval;
-      if(yPosition >= origY + frameRate * levelInterval){
+      //if(yPosition >= origY + frameRate * levelInterval){
+      if( (millis() - lastDraw) > waitTime) {
         canRedraw = true;
         opacity = 255;
-        yPosition = origY;
+        //yPosition = origY;
       }
     }
   }

@@ -10,7 +10,7 @@ static final int STATE_COUNT = 3;
 
 static final int INITIAL_LIVES = 10;
 
-static final int MAX_FRAME_RATE = 30;
+static final int MAX_FRAME_RATE = 60;
 int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
@@ -18,6 +18,8 @@ int currentState;
 
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
+
+static final int GROUND = HEIGHT - 50;
 
 PImage meatLife;  //image instance for meat life
 

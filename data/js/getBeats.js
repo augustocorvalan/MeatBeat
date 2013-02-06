@@ -20,7 +20,7 @@ function loadRemote(path, callback) {
 }
 
 
-var beatsPerMinute;
+var spb;
 var beatsarray;
 
 function getBeats(file) {
@@ -31,7 +31,6 @@ function getBeats(file) {
     var track = midiFile.tracks[1];
     var ticksPerBeat = midiFile.header.ticksPerBeat;
     var secondsPerBeat = 120;                             //GLOBAL for processing.
-    beatsPerMinute = secondsPerBeat;
     var midi2beat = [36, 37, 38, 39, 40, 41, 42, 43];
     var beatInd = [0, 0, 0, 0, 0, 0, 0, 0];
     var beats = [[0], [0], [0], [0], [0], [0], [0], [0]];
@@ -77,6 +76,8 @@ function getBeats(file) {
     }
     
     beatsarray = beats;
+    spb = secondsPerBeat;
+    console.log(beats);
   } );
 }
 
