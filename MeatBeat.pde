@@ -20,6 +20,7 @@ static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
 
 PImage meatLife;  //image instance for meat life
+PShape cloudImage;  //image for the cloud
 
 Player player;  //player instance
 
@@ -33,6 +34,7 @@ void setup(){
   }
   setState(FIRST_STATE);
   
+  cloudImage = loadShape("cloud.svg");
   meatLife = loadImage("sprite sheets/meatball.png");
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
   PFont font = createFont("chubhand.ttf", 48); 
