@@ -7,7 +7,7 @@ class FinishState extends BaseState{
   float sin_offset= PI/2;
   
   void setup(){
-  playSound("sounds/soundeffects/meatbeatscorescreen.wav");
+  playSound("sounds/soundeffects/meatbeatscorescreen.ogg");
   
   }
  
