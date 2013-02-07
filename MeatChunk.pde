@@ -69,4 +69,12 @@ class MeatChunk{
     //setTimeout(loop, 1000 / 60); // 30 fps
   }
   
+  int getBounceWait() {
+    return bounceWait;
+  }
+  
+  int getLastBounce() {
+    return lastBounce;
+  }
+  
 }

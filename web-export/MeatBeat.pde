@@ -10,7 +10,7 @@ static final int STATE_COUNT = 3;
 
 static final int INITIAL_LIVES = 10;
 
-static final int MAX_FRAME_RATE = 60;
+static final int MAX_FRAME_RATE = 120;
 int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
@@ -242,7 +242,7 @@ class GameplayState extends BaseState{
   Panel[] panelArray;
   MeatChunk[] chunkArray;
   int offset = 60;
-  float threshold = 25;
+  float thresholdMS = 100;
   
   void setup(){
     background(0);
@@ -290,67 +290,47 @@ class GameplayState extends BaseState{
         ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, MEAT_WIDTH, MEAT_HEIGHT);
         chunkArray[i].move();
         panelArray[i].draw();
-        /*if(chunkArray[i].yPosition >= 600){
-           chunkArray[i].velocity = -10;
-        }*/
       }
   }
  
   void keyPressed(){
     //setState(FINISH_STATE);
     //player.decreaseLives();
-    switch(key){
-      case 'j':
-        if(currentTrackNum >= 1){
-          if(panelArray[0].canRedraw){
-            panelArray[0].drawIt();
-            if((abs((chunkArray[0].yPosition+MEAT_HEIGHT/2) - (panelArray[0].origY-PANEL_HEIGHT/2)) <= threshold)) { //&& !panelArray[0].canRedraw)){
-               //chunkArray[0].velocity = -15;
-               playSound(currentLevel.getTrack(0).getSound());
-            }
-          }
-        }
-        break;
-     case 'k':
-      if(currentTrackNum >= 2){
-        if(panelArray[1].canRedraw){
-          panelArray[1].canRedraw = false;
-          if((abs((chunkArray[1].yPosition+MEAT_HEIGHT/2) - (panelArray[1].origY-PANEL_HEIGHT/2)) <= threshold)) {
-               //chunkArray[1].velocity = -15;
-               playSound(currentLevel.getTrack(1).getSound());
-          }
+    
+    for (int i = 0; i < currentLevel.getNumTracks(); i++) {
+      if (key==currentLevel.getTrack(i).getKey()) {
+        if (panelArray[i].offScreen) {
+          panelArray[i].drawIt();
+          checkBeatSuccess(i);
         }
       }
-      break;
-     case 'l':
-      if(currentTrackNum >= 3){
-        if(panelArray[2].canRedraw){
-          panelArray[2].canRedraw = false;
-          if((abs((chunkArray[2].yPosition+MEAT_HEIGHT/2) - (panelArray[2].origY-PANEL_HEIGHT/2)) <= threshold)) {
-               //chunkArray[2].velocity = -15;
-               playSound(currentLevel.getTrack(2).getSound());
-          }
-        }
-      }
-      break;
-     case ';':
-      if(currentTrackNum >= 4){
-        if(panelArray[3].canRedraw){
-          panelArray[3].canRedraw = false;
-          if((chunkArray[3].yPosition >= (panelArray[3].origY + threshold) && !panelArray[3].canRedraw)){
-               //chunkArray[3].velocity = -15;
-               playSound(currentLevel.getTrack(3).getSound());
-          }
-        }
-      }
-      break;
-     case 'q': println(frameRate); break;
     }
+    
+    if(key=='q') println(frameRate);
   }
     
   void cleanup(){
    
-  } 
+  }
+  
+  boolean checkBeatSuccess(int track) {
+    if ((abs(panelArray[track].getLastDraw() - (chunkArray[track].getLastBounce()+chunkArray[track].getBounceWait())) <= thresholdMS)) {
+    //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {
+      beatSuccess(track);
+    }
+    else {
+      beatFailure(track);
+    }
+  }
+  
+  void beatSuccess(int track) {
+    playSound(currentLevel.getTrack(track).getSound());
+  }
+  
+  void beatFailure(int track) {
+    
+  }
+  
 }
 String[] levelNames = {"sounds/testmidi/samplemeatbeatbeat.mid",
                        "sounds/testmidi/TwoTrackBasicBeat.mid"};
@@ -393,7 +373,7 @@ class Level {
     numTracks = calcNumTracks(beats);
     tracks = new Track[numTracks+1];
     for(int i=0; i < numTracks; i++) {
-      tracks[i] = new Track(beats[i],sounds[i]);
+      tracks[i] = new Track(beats[i],sounds[i],keyVals[i]);
     }
   }
   
@@ -479,6 +459,14 @@ class MeatChunk{
     float dt = 1 / frameRate;
     update(dt);
     //setTimeout(loop, 1000 / 60); // 30 fps
+  }
+  
+  int getBounceWait() {
+    return bounceWait;
+  }
+  
+  int getLastBounce() {
+    return lastBounce;
   }
   
 }
@@ -636,16 +624,15 @@ void branch(float h, float theta) {
 }
 
 static final int PANEL_WIDTH = 50;
-static final int PANEL_HEIGHT = 20;
+static final int PANEL_HEIGHT = 10;
 
 class Panel{
   float xPosition, yPosition, origY;
   float angle = 0;
   float levelInterval = .5;
   int opacity;
-  int opacityInterval = round(255/frameRate);
-  boolean canRedraw;
-  boolean canRepress;
+  //int opacityInterval = round(255/frameRate);
+  boolean offScreen;
   int lastDraw;
   int waitTime = 100; // ms between allowable presses
   
@@ -654,29 +641,32 @@ class Panel{
     this.yPosition = yPosition;
     this.origY = yPosition;
     opacity = 255;
-    canRedraw = true;
-    canRepress = true;
+    offScreen = true;
     lastDraw = 0;
   }
   
+  void getLastDraw() { // returns ms value of last time drawn
+    return lastDraw;
+  }
+  
   void drawIt() {
-    canRedraw = false;
+    offScreen = false;
     lastDraw = millis();
     fill(213, 143, 45, opacity);
     rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT); 
   }
   
   void draw(){
-    if(!canRedraw){
+    if(!offScreen){
       noStroke();        
       fill(213, 143, 45, opacity);
       rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT);
       //yPosition = yPosition + levelInterval;
-      opacity = opacity - opacityInterval;
+      //opacity = opacity - opacityInterval;
       //if(yPosition >= origY + frameRate * levelInterval){
       if( (millis() - lastDraw) > waitTime) {
-        canRedraw = true;
-        opacity = 255;
+        offScreen = true;
+        //opacity = 255;
         //yPosition = origY;
       }
     }
@@ -721,14 +711,18 @@ class TitleState extends BaseState{
     
   }
 }
+char[] keyVals = {'j','k','l',';','a','s','d','f'};
+
 class Track {
   
   float[] beats;
   String sound;
+  char keyVal;
   
-  Track(float[] beatmatrix, String s) {
+  Track(float[] beatmatrix, String s, char kv) {
     beats = beatmatrix;
     sound = s;
+    keyVal = kv;
   }
   
   String getSound() {
@@ -741,6 +735,10 @@ class Track {
   
   float getBeat(int i) {
     return beats[i];
+  }
+  
+  char getKey() {
+    return keyVal;
   }
   
 }

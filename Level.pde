@@ -39,7 +39,7 @@ class Level {
     numTracks = calcNumTracks(beats);
     tracks = new Track[numTracks+1];
     for(int i=0; i < numTracks; i++) {
-      tracks[i] = new Track(beats[i],sounds[i]);
+      tracks[i] = new Track(beats[i],sounds[i],keyVals[i]);
     }
   }
   

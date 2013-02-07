@@ -1,11 +1,15 @@
+char[] keyVals = {'j','k','l',';','a','s','d','f'};
+
 class Track {
   
   float[] beats;
   String sound;
+  char keyVal;
   
-  Track(float[] beatmatrix, String s) {
+  Track(float[] beatmatrix, String s, char kv) {
     beats = beatmatrix;
     sound = s;
+    keyVal = kv;
   }
   
   String getSound() {
@@ -18,6 +22,10 @@ class Track {
   
   float getBeat(int i) {
     return beats[i];
+  }
+  
+  char getKey() {
+    return keyVal;
   }
   
 }
