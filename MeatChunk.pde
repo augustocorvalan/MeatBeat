@@ -11,6 +11,11 @@ class MeatChunk{
   int bounceWait;
   int currentBeat;
   float unitHeight = height / 3;
+  int shouldBounceAgain;
+  boolean canBounce;
+  int beatAtFail;
+  int opacity;
+  int timeReturnFromFail;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -18,9 +23,14 @@ class MeatChunk{
     this.gravity = g;
     this.velocity = vy;
     this.track = t;
-    this.lastBounce = 0;
-    this.bounceWait = 0;
+    this.lastBounce = millis();
+    this.bounceWait = t.getBeat(0)*1000;
     this.currentBeat = 0;
+    this.shouldBounceAgain = 0;
+    this.canBounce = true;
+    this.beatAtFail = 0;
+    this.opacity = 255;
+    this.timeReturnFromFail = 0;
   }
   
   void increment(){
@@ -28,12 +38,23 @@ class MeatChunk{
     this.velocity += gravity;
   }
   
-  void move() {
-    if ((millis()-lastBounce) > bounceWait) {
+  int move() {
+    if(millis() > shouldBounceAgain) {
+      updateCurrentBeat();
       doBounce();
+      if(!canBounce & (millis() >= timeReturnFromFail)) {
+        opacity = 255;
+        canBounce = true;
+        return 0;  // NOT IN PLAY YET.
+      }
+      if(canBounce)
+        return 1;  // RETURN 1 IF GAMEPLAY STATE SHOULD CHECK IF BEAT WAS HIT
+      else
+        return 0;
     }
     else {
       doUpdate();
+      return 0; // RETURN 0 IF GAMEPLAY STATE SHOULD NOT CHECK IF BEAT WAS HIT
     }
   }
   
@@ -55,12 +76,13 @@ class MeatChunk{
   
   void doBounce() {
     lastBounce = millis();
+    //playSound(track.getSound());
     float period = track.getBeat(currentBeat);
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / spb);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
-    currentBeat = (currentBeat + 1) % track.getBeats().length;
-    bounceWait = 1000*period; // period in ms
+    bounceWait = (int)(1000*period); // period in ms
+    shouldBounceAgain = lastBounce + bounceWait;
   }
   
   void doUpdate() {
@@ -75,6 +97,23 @@ class MeatChunk{
   
   int getLastBounce() {
     return lastBounce;
+  }
+  
+  void fail() {
+    canBounce = false;
+    //beatAtFail = currentBeat;
+    //shouldBounceAgain = millis() + 1000*(track.getBeat(beatAtFail) + track.getBeat(beatAtFail+1) + track.getBeat(beatAtFail+2));
+    timeReturnFromFail = millis() + 1000*spb*3;//(track.getBeat(beatAtFail) + track.getBeat(beatAtFail+1) + track.getBeat(beatAtFail+2));
+    //yPosition = GROUND - MEAT_HEIGHT/2;
+    //velocity = 0;
+    //gravity = 0;
+    //updateCurrentBeat();
+    //updateCurrentBeat();
+    opacity = 50;
+  }
+  
+  void updateCurrentBeat() {
+    currentBeat = (currentBeat + 1) % track.getBeats().length;
   }
   
 }

@@ -150,78 +150,18 @@ class FinishState extends BaseState{
   float sin_offset= PI/2;
   
   void setup(){
-    chunkArray = new MeatChunk[CHUNK_NUMBER];
-    panelArray = new Panel[CHUNK_NUMBER];
-    int offset = 60;
-    for(int i = 0; i < chunkArray.length; i++){
-      chunkArray[i] = new MeatChunk(offset + (width - offset * 2)/ (CHUNK_NUMBER - 1) * i,  height/2);
-      chunkArray[i].velocity = .25;
-      chunkArray[i].gravity = .5;
-      panelArray[i] = new Panel(offset + (width - offset * 2)/ (CHUNK_NUMBER - 1) * i, height - 50);
-    }
+  playSound("sounds/soundeffects/meatbeatscorescreen.wav");
+  
   }
  
   void draw(){
     background(0);
-    stroke(255);
-    line(0,height-50,width,height-50);
-    for(int i = 0; i < chunkArray.length; i++){
-      fill(0, 241, 177);
-      ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, 25, 25);
-      //chunkArray[i].velocity = sin(sin_offset);
-      chunkArray[i].increment();
-      if(chunkArray[i].yPosition >= 600){
-         chunkArray[i].velocity = -10;
-      }
-      panelArray[i].draw();
-   }
-   rect(0,0,25,25);
-   sin_offset += PI/180;
+    text("Hey meatbeater! Thanks for playing!", WIDTH/2, HEIGHT/2);
+    text("Total score: " + player.getScore(), WIDTH/2, HEIGHT/2 + 60);
   }
  
   void keyPressed(){
-    switch(key){
-      case 'j':
-        if(CHUNK_NUMBER >= 1){
-          if(panelArray[0].canRedraw){
-            panelArray[0].canRedraw = false;
-            if((chunkArray[0].yPosition >= (panelArray[0].origY + threshold) && !panelArray[0].canRedraw)){
-               chunkArray[0].velocity = -15;
-            }
-          }
-        }
-        break;
-     case 'k':
-      if(CHUNK_NUMBER >= 2){
-        if(panelArray[1].canRedraw){
-          panelArray[1].canRedraw = false;
-          if((chunkArray[1].yPosition >= (panelArray[1].origY + threshold) && !panelArray[1].canRedraw)){
-            chunkArray[1].velocity = -15;
-          }
-        }
-      }
-      break;
-     case 'l':
-      if(CHUNK_NUMBER >= 3){
-        if(panelArray[2].canRedraw){
-          panelArray[2].canRedraw = false;
-          if((chunkArray[2].yPosition >= (panelArray[1].origY + threshold) && !panelArray[2].canRedraw)){
-             chunkArray[2].velocity = -15;
-          }
-        }
-      }
-      break;
-     case ';':
-      if(CHUNK_NUMBER >= 4){
-        if(panelArray[3].canRedraw){
-          panelArray[3].canRedraw = false;
-          if((chunkArray[3].yPosition >= (panelArray[3].origY + threshold) && !panelArray[3].canRedraw)){
-             chunkArray[3].velocity = -15;
-          }
-        }
-      }
-      break; 
-    }
+    
   }
  
   void cleanup(){
@@ -236,13 +176,16 @@ class GameplayState extends BaseState{
   Hill[] hills = new Hill[totalHills];
   int totalTrees = 3;
   Tree[] trees = new Tree[totalTrees];
+  int[] soundTimes;
   
   Level currentLevel;
   int currentTrackNum;
   Panel[] panelArray;
   MeatChunk[] chunkArray;
   int offset = 60;
-  float thresholdMS = 100;
+  float thresholdMS = 650;
+  int timingErrorControl = 10;
+  int[] shouldCheckBeat;
   
   void setup(){
     background(0);
@@ -251,10 +194,10 @@ class GameplayState extends BaseState{
       BACKGROUND SETUP
     **/
     setupHills(hills);  //hill setup
-//    trees = setupTrees(totalTrees);  //tree setup
+    trees = setupTrees(totalTrees);  //tree setup
 
     /** LIVES **/
-    player = new Player(INITIAL_LIVES);  //new player instance
+    player = new Player(INITIAL_LIVES,0);  //new player instance
     
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
@@ -263,10 +206,14 @@ class GameplayState extends BaseState{
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
+    soundTimes = new int[currentTrackNum];
+    shouldCheckBeat = new int[currentTrackNum];
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
       chunkArray[i] = new MeatChunk(xpos, GROUND, 0, 0, currentLevel.getTrack(i));
       panelArray[i] = new Panel(xpos, GROUND+(PANEL_HEIGHT/2));
+      soundTimes[i] = millis();
+      shouldCheckBeat[i] = 0;
     }
   }
  
@@ -281,15 +228,21 @@ class GameplayState extends BaseState{
 
       /** LIVES **/
       player.drawLives();
+      player.drawScore();
       
       stroke(255);
       line(0,GROUND,width,GROUND);  // line possibly temp for location of GROUND.
       
       for(int i = 0; i < currentTrackNum; i++){
-        fill(255, 51, 51);
+        fill(255, 51, 51,chunkArray[i].opacity);
         ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, MEAT_WIDTH, MEAT_HEIGHT);
-        chunkArray[i].move();
+        shouldCheckBeat[i] = chunkArray[i].move();
         panelArray[i].draw();
+      }
+      if (shouldCheckBeat[0]==1) {
+          checkBeatSuccess(0);
+          playSound(currentLevel.getTrack(0).getSound());
+          //soundTimes[0] = millis();
       }
   }
  
@@ -301,12 +254,13 @@ class GameplayState extends BaseState{
       if (key==currentLevel.getTrack(i).getKey()) {
         if (panelArray[i].offScreen) {
           panelArray[i].drawIt();
-          checkBeatSuccess(i);
+          //checkBeatSuccess(i);
         }
       }
     }
     
     if(key=='q') println(frameRate);
+    if(key=='w') playSound(failsound);
   }
     
   void cleanup(){
@@ -314,7 +268,9 @@ class GameplayState extends BaseState{
   }
   
   boolean checkBeatSuccess(int track) {
-    if ((abs(panelArray[track].getLastDraw() - (chunkArray[track].getLastBounce()+chunkArray[track].getBounceWait())) <= thresholdMS)) {
+    int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].shouldBounceAgain);
+    //println(diff);
+    if (diff <= thresholdMS) {
     //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {
       beatSuccess(track);
     }
@@ -324,11 +280,20 @@ class GameplayState extends BaseState{
   }
   
   void beatSuccess(int track) {
-    playSound(currentLevel.getTrack(track).getSound());
+    //playSound(currentLevel.getTrack(track).getSound());
+    //chunkArray[track].track.canSound=true;
+    currentLevel.getTrack(track).canSound=true;
+    player.changeScore(1);
+    //chunkArray[track].canBounce=true;
+    
   }
   
   void beatFailure(int track) {
-    
+    //playSound(failsound);
+    //chunkArray[track].track.canSound=false;
+    currentLevel.getTrack(track).canSound=false;
+    player.decreaseLives();
+    chunkArray[track].fail();
   }
   
 }
@@ -337,6 +302,8 @@ String[] levelNames = {"sounds/testmidi/samplemeatbeatbeat.mid",
                        
 String[][] soundNames = { {"music/meatbeatkick.ogg","music/meatbeatkick.ogg","music/meatbeatkick.ogg"},
                           {"music/meatbeatkick.ogg","music/meatbeatkick.ogg"}};
+
+String failsound = "sounds/soundeffects/meatbeatfailnoise.wav";
                           
 float[][] level1 = { {0,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727,0.272727,0.545454,0.545454,0.545454,0.272727},
                      {9.272718,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908,1.090908},
@@ -403,6 +370,11 @@ class MeatChunk{
   int bounceWait;
   int currentBeat;
   float unitHeight = height / 3;
+  int shouldBounceAgain;
+  boolean canBounce;
+  int beatAtFail;
+  int opacity;
+  int timeReturnFromFail;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -410,9 +382,14 @@ class MeatChunk{
     this.gravity = g;
     this.velocity = vy;
     this.track = t;
-    this.lastBounce = 0;
-    this.bounceWait = 0;
+    this.lastBounce = millis();
+    this.bounceWait = t.getBeat(0)*1000;
     this.currentBeat = 0;
+    this.shouldBounceAgain = 0;
+    this.canBounce = true;
+    this.beatAtFail = 0;
+    this.opacity = 255;
+    this.timeReturnFromFail = 0;
   }
   
   void increment(){
@@ -420,12 +397,23 @@ class MeatChunk{
     this.velocity += gravity;
   }
   
-  void move() {
-    if ((millis()-lastBounce) > bounceWait) {
+  int move() {
+    if(millis() > shouldBounceAgain) {
+      updateCurrentBeat();
       doBounce();
+      if(!canBounce & (millis() >= timeReturnFromFail)) {
+        opacity = 255;
+        canBounce = true;
+        return 0;  // NOT IN PLAY YET.
+      }
+      if(canBounce)
+        return 1;  // RETURN 1 IF GAMEPLAY STATE SHOULD CHECK IF BEAT WAS HIT
+      else
+        return 0;
     }
     else {
       doUpdate();
+      return 0; // RETURN 0 IF GAMEPLAY STATE SHOULD NOT CHECK IF BEAT WAS HIT
     }
   }
   
@@ -447,12 +435,13 @@ class MeatChunk{
   
   void doBounce() {
     lastBounce = millis();
+    //playSound(track.getSound());
     float period = track.getBeat(currentBeat);
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / spb);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
-    currentBeat = (currentBeat + 1) % track.getBeats().length;
-    bounceWait = 1000*period; // period in ms
+    bounceWait = (int)(1000*period); // period in ms
+    shouldBounceAgain = lastBounce + bounceWait;
   }
   
   void doUpdate() {
@@ -467,6 +456,23 @@ class MeatChunk{
   
   int getLastBounce() {
     return lastBounce;
+  }
+  
+  void fail() {
+    canBounce = false;
+    //beatAtFail = currentBeat;
+    //shouldBounceAgain = millis() + 1000*(track.getBeat(beatAtFail) + track.getBeat(beatAtFail+1) + track.getBeat(beatAtFail+2));
+    timeReturnFromFail = millis() + 1000*spb*3;//(track.getBeat(beatAtFail) + track.getBeat(beatAtFail+1) + track.getBeat(beatAtFail+2));
+    //yPosition = GROUND - MEAT_HEIGHT/2;
+    //velocity = 0;
+    //gravity = 0;
+    //updateCurrentBeat();
+    //updateCurrentBeat();
+    opacity = 50;
+  }
+  
+  void updateCurrentBeat() {
+    currentBeat = (currentBeat + 1) % track.getBeats().length;
   }
   
 }
@@ -488,7 +494,7 @@ PImage[] cutUpNumbers(PImage font){
 /**
 TREES
 **/
-static final float BPM = 120;
+static final float BPM = 110;
 int counter = 0; //keeps count of frame rate
 int length;
 //colors for tree
@@ -651,9 +657,9 @@ class Panel{
   
   void drawIt() {
     offScreen = false;
-    lastDraw = millis();
     fill(213, 143, 45, opacity);
-    rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT); 
+    rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT);
+    lastDraw = millis();
   }
   
   void draw(){
@@ -674,23 +680,45 @@ class Panel{
 }
 class Player{
    int lives;
-   Player(int lives){
-     this.lives = lives; 
+   int score;
+   
+   Player(int lives, int score){
+     this.lives = lives;
+     this.score = score;
    }
+   
    void decreaseLives(){
      lives--;
+     if(lives<=0) setState(FINISH_STATE);; // should have endGame();
    }
+   
    int getLives(){
      return lives;
    }
-  void drawLives(){
-    pushMatrix();
-    fill(255);
-    image(meatLife, WIDTH/10, HEIGHT/120, 38, 38);  //meatball
-    text("x", WIDTH/12, HEIGHT/15); //x text
-    text(lives, WIDTH/25, HEIGHT/15);  //number of lives
-    popMatrix();
-  }
+   
+   int getScore() {
+     return score;
+   }
+   
+   int changeScore(int change) {
+     score = score + change;
+   }
+   
+   void drawScore(){
+     pushMatrix();
+     fill(255);
+     text(score, WIDTH-50, HEIGHT/15);  //number of lives
+     popMatrix();
+   }
+   
+   void drawLives(){
+     pushMatrix();
+     fill(255);
+     image(meatLife, WIDTH/10, HEIGHT/120, 38, 38);  //meatball
+     text("x", WIDTH/12, HEIGHT/15); //x text
+     text(lives, WIDTH/25, HEIGHT/15);  //number of lives
+     popMatrix();
+   }
 }
 class TitleState extends BaseState{
   void setup(){
@@ -715,6 +743,7 @@ char[] keyVals = {'j','k','l',';','a','s','d','f'};
 
 class Track {
   
+  boolean canSound;
   float[] beats;
   String sound;
   char keyVal;
@@ -723,10 +752,16 @@ class Track {
     beats = beatmatrix;
     sound = s;
     keyVal = kv;
+    canSound = true;
   }
   
   String getSound() {
-    return sound;
+    if (canSound) {
+      return sound;
+    }
+    else {
+      return failsound;
+    }
   }
   
   float[] getBeats() {

@@ -2,6 +2,7 @@ char[] keyVals = {'j','k','l',';','a','s','d','f'};
 
 class Track {
   
+  boolean canSound;
   float[] beats;
   String sound;
   char keyVal;
@@ -10,10 +11,16 @@ class Track {
     beats = beatmatrix;
     sound = s;
     keyVal = kv;
+    canSound = true;
   }
   
   String getSound() {
-    return sound;
+    if (canSound) {
+      return sound;
+    }
+    else {
+      return failsound;
+    }
   }
   
   float[] getBeats() {
