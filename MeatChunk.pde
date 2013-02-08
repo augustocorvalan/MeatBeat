@@ -39,6 +39,7 @@ class MeatChunk{
   }
   
   int move() {
+    draw();
     if(millis() > shouldBounceAgain) {
       updateCurrentBeat();
       doBounce();
@@ -56,6 +57,11 @@ class MeatChunk{
       doUpdate();
       return 0; // RETURN 0 IF GAMEPLAY STATE SHOULD NOT CHECK IF BEAT WAS HIT
     }
+  }
+  
+  void draw() {
+    fill(255, 51, 51, opacity);
+    ellipse(xPosition, yPosition, MEAT_WIDTH, MEAT_HEIGHT);
   }
   
   void bounce(float period, float h) {
