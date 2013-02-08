@@ -18,7 +18,7 @@ class FinishState extends BaseState{
   }
  
   void keyPressed(){
-    
+    if(key=='r') { setState(GAMEPLAY_STATE); }
   }
  
   void cleanup(){

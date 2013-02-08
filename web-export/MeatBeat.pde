@@ -10,7 +10,7 @@ static final int STATE_COUNT = 3;
 
 static final int INITIAL_LIVES = 10;
 
-static final int MAX_FRAME_RATE = 120;
+static final int MAX_FRAME_RATE = 30;
 int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
@@ -161,7 +161,7 @@ class FinishState extends BaseState{
   }
  
   void keyPressed(){
-    
+    if(key=='r') { setState(GAMEPLAY_STATE); }
   }
  
   void cleanup(){
@@ -266,9 +266,9 @@ class GameplayState extends BaseState{
   }
   
   boolean checkBeatSuccess(int track) {
-    int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].shouldBounceAgain);
+    //int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].shouldBounceAgain);
     //println(diff);
-    if (diff <= thresholdMS) {
+    if (!panelArray[track].offScreen) {
     //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {
       beatSuccess(track);
     }
@@ -357,7 +357,11 @@ class Level {
 }
 static final int MEAT_WIDTH = 25;
 static final int MEAT_HEIGHT = 25;
-static final int DEFAULT_BOUNCE_HEIGHT = 0;   
+static final int DEFAULT_BOUNCE_HEIGHT = 0;
+static final int TIME_IN_HELL = 500;
+static final int BOUNCING = 1;
+static final int IN_HELL = 2;
+static final int RISING = 3;
 
 class MeatChunk{
   int xPosition, yPosition;
@@ -369,10 +373,11 @@ class MeatChunk{
   int currentBeat;
   float unitHeight = height / 3;
   int shouldBounceAgain;
-  boolean canBounce;
-  int beatAtFail;
+  boolean active;
   int opacity;
   int timeReturnFromFail;
+  int failTime;
+  int state;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -384,10 +389,11 @@ class MeatChunk{
     this.bounceWait = t.getBeat(0)*1000;
     this.currentBeat = 0;
     this.shouldBounceAgain = 0;
-    this.canBounce = true;
-    this.beatAtFail = 0;
+    this.active = true;
     this.opacity = 255;
     this.timeReturnFromFail = 0;
+    this.failTime = 0;
+    state = BOUNCING;
   }
   
   void increment(){
@@ -397,15 +403,14 @@ class MeatChunk{
   
   int move() {
     draw();
-    if(millis() > shouldBounceAgain) {
+    if(millis() > shouldBounceAgain) { // ball should be bouncing
       updateCurrentBeat();
       doBounce();
-      if(!canBounce & (millis() >= timeReturnFromFail)) {
-        opacity = 255;
-        canBounce = true;
-        return 0;  // NOT IN PLAY YET.
+      if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
+        makeActive();
+        return 0;  // NOT IN PLAY YET. give player a bounce to recover.
       }
-      if(canBounce)
+      if(active)
         return 1;  // RETURN 1 IF GAMEPLAY STATE SHOULD CHECK IF BEAT WAS HIT
       else
         return 0;
@@ -414,6 +419,16 @@ class MeatChunk{
       doUpdate();
       return 0; // RETURN 0 IF GAMEPLAY STATE SHOULD NOT CHECK IF BEAT WAS HIT
     }
+  }
+  
+  void makeActive() {
+    active = true;
+    opacity = 255;
+  }
+  
+  void makeInActive() {
+    active = false;
+    opacity = 50;
   }
   
   void draw() {
@@ -439,7 +454,6 @@ class MeatChunk{
   
   void doBounce() {
     lastBounce = millis();
-    //playSound(track.getSound());
     float period = track.getBeat(currentBeat);
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / spb);
     bounce(period, ht);
@@ -463,16 +477,24 @@ class MeatChunk{
   }
   
   void fail() {
-    canBounce = false;
-    //beatAtFail = currentBeat;
-    //shouldBounceAgain = millis() + 1000*(track.getBeat(beatAtFail) + track.getBeat(beatAtFail+1) + track.getBeat(beatAtFail+2));
-    timeReturnFromFail = millis() + 1000*spb*3;//(track.getBeat(beatAtFail) + track.getBeat(beatAtFail+1) + track.getBeat(beatAtFail+2));
-    //yPosition = GROUND - MEAT_HEIGHT/2;
-    //velocity = 0;
-    //gravity = 0;
-    //updateCurrentBeat();
-    //updateCurrentBeat();
-    opacity = 50;
+    makeInActive();
+    failTime = millis();
+    shouldBounceAgain = failTime + 2000*spb;    // start bouncing in ghost mode after two beats
+    timeReturnFromFail = failTime + 4000*spb;   // become active again after four beats
+    updateCurrentBeat();
+    updateCurrentBeat();
+    //state = IN_HELL;
+    yPosition = HEIGHT + MEAT_HEIGHT/2;
+    velocity = (GROUND + 1.5*MEAT_HEIGHT)/-8.5f;
+    gravity = 0;
+    //returnFromHell();
+  }
+  
+  void returnFromHell() {
+    /*if ((millis() - failTime) >= TIME_IN_HELL) {
+      yPosition = yPosition + velocity;
+      println("returning" + yPosition);
+    }*/
   }
   
   void updateCurrentBeat() {
@@ -735,8 +757,7 @@ class TitleState extends BaseState{
   }
   
   void keyPressed(){
-    //TEST REMOVE
-    setState(GAMEPLAY_STATE);
+      setState(GAMEPLAY_STATE);
   }
   
   void cleanup(){

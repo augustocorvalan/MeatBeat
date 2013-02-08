@@ -10,7 +10,7 @@ static final int STATE_COUNT = 3;
 
 static final int INITIAL_LIVES = 10;
 
-static final int MAX_FRAME_RATE = 120;
+static final int MAX_FRAME_RATE = 30;
 int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
