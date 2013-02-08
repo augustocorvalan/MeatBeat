@@ -16,6 +16,7 @@ class GameplayState extends BaseState{
   float thresholdMS = 650;
   int timingErrorControl = 10;
   int[] shouldCheckBeat;
+  Baseline bl;
   
   void setup(){
     background(0);
@@ -39,10 +40,12 @@ class GameplayState extends BaseState{
     chunkArray = new MeatChunk[currentTrackNum];
     soundTimes = new int[currentTrackNum];
     shouldCheckBeat = new int[currentTrackNum];
+    bl = new Baseline();
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
       chunkArray[i] = new MeatChunk(xpos, GROUND, 0, 0, currentLevel.getTrack(i));
       panelArray[i] = new Panel(xpos, GROUND+(PANEL_HEIGHT/2));
+      bl.addEmptyZone(xpos);
       soundTimes[i] = millis();
       shouldCheckBeat[i] = 0;
     }
@@ -60,9 +63,7 @@ class GameplayState extends BaseState{
       /** LIVES **/
       player.drawLives();
       player.drawScore();
-      
-      stroke(255);
-      line(0,GROUND,width,GROUND);  // line possibly temp for location of GROUND.
+      bl.draw();
       
       for(int i = 0; i < currentTrackNum; i++){
         shouldCheckBeat[i] = chunkArray[i].move();
@@ -74,6 +75,7 @@ class GameplayState extends BaseState{
           //soundTimes[0] = millis();
       }
   }
+  
  
   void keyPressed(){
     //setState(FINISH_STATE);
@@ -90,6 +92,7 @@ class GameplayState extends BaseState{
     
     if(key=='q') println(frameRate);
     if(key=='w') playSound(failsound);
+    //if(key=='p') noLoop();
   }
     
   void cleanup(){
