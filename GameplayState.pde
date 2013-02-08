@@ -32,6 +32,7 @@ class GameplayState extends BaseState{
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
     currentLevel = new Level(beatsarray,soundNames[0]);
+    currentSPB = spb;
     getBeats(levelNames[1]);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];

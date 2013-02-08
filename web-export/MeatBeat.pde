@@ -26,9 +26,12 @@ PShape cloudImage;  //image for the cloud
 
 Player player;  //player instance
 
+int levelIndex = 0; // keeps track of current level
+int currentSPB;
+
 void setup(){
   frameRate(MAX_FRAME_RATE);
-  getBeats(levelNames[0]);
+  getBeats(levelNames[levelIndex]);
   size(800, 600);
   background(255);
   currentState = FIRST_STATE;
@@ -202,6 +205,7 @@ class GameplayState extends BaseState{
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
     currentLevel = new Level(beatsarray,soundNames[0]);
+    currentSPB = spb;
     getBeats(levelNames[1]);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
@@ -455,7 +459,7 @@ class MeatChunk{
   void doBounce() {
     lastBounce = millis();
     float period = track.getBeat(currentBeat);
-    float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / spb);
+    float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / currentSPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
@@ -479,8 +483,8 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + 2000*spb;    // start bouncing in ghost mode after two beats
-    timeReturnFromFail = failTime + 4000*spb;   // become active again after four beats
+    shouldBounceAgain = failTime + 2000*currentSPB;    // start bouncing in ghost mode after two beats
+    timeReturnFromFail = failTime + 4000*currentSPB;   // become active again after four beats
     updateCurrentBeat();
     updateCurrentBeat();
     //state = IN_HELL;

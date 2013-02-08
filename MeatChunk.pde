@@ -98,7 +98,7 @@ class MeatChunk{
   void doBounce() {
     lastBounce = millis();
     float period = track.getBeat(currentBeat);
-    float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / spb);
+    float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / currentSPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
@@ -122,8 +122,8 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + 2000*spb;    // start bouncing in ghost mode after two beats
-    timeReturnFromFail = failTime + 4000*spb;   // become active again after four beats
+    shouldBounceAgain = failTime + 2000*currentSPB;    // start bouncing in ghost mode after two beats
+    timeReturnFromFail = failTime + 4000*currentSPB;   // become active again after four beats
     updateCurrentBeat();
     updateCurrentBeat();
     //state = IN_HELL;
