@@ -1,3 +1,6 @@
+/*********
+HILL
+*********/
 class Hill{
   float x, y, width, height, start, stop;
   Hill(float x, float y, float width, float height, float start, float stop){
@@ -17,7 +20,7 @@ Hill setupHill(float xOffset, float heightOffset, float widthOffset){
   float x = 2*WIDTH/10 + xOffset;
   float y = HEIGHT/10 + HEIGHT * 0.9;
   float width = WIDTH/2 + widthOffset;
-  float height =  HEIGHT * 1.5 + heightOffset;
+  float height =  HEIGHT * 1 + heightOffset;
   float start = -PI;
   float stop = 0;
   Hill h = new Hill(x, y, width, height, start, stop);
@@ -43,11 +46,37 @@ void setupHills(Hill[] hills){
 void drawHills(Hill[] hills){
   pushMatrix();
   //Style stuff
-  fill(color(102, 153, 102));  //temp color for now
+  fill(color(102, 153, 102, 200 - frameCount *0.01));  //temp color for now
   strokeWeight(4);
-  stroke(255);
+  stroke(200 - frameCount * 0.01);
   for(int i = 0; i < hills.length; i++){
     hills[i].draw();
   }
   popMatrix();
+}
+
+/*********
+CLOUDS
+*********/
+class Cloud{
+  int x, y, scale;
+  Cloud(int x, int y, int scale){
+    this.x = x;
+    this.y = y;
+    this.scale = scale;
+  }
+}
+
+void setupClouds(Cloud[] clouds){
+  for(int i = 0; i < clouds.length; i++){
+    float yOffset = random(0.8, 1);
+    float y = HEIGHT - HEIGHT * yOffset;
+  }
+}
+
+void drawClouds(Cloud[] clouds){
+  for(int i = 0; i < clouds.length; i++){
+    
+//    shape(cloudImage, 250, );
+  }
 }

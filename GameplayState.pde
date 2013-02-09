@@ -6,7 +6,11 @@ class GameplayState extends BaseState{
   Hill[] hills = new Hill[totalHills];
   int totalTrees = 3;
   Tree[] trees = new Tree[totalTrees];
+  int totalClouds = 3;
+  Cloud[] clouds = new Cloud[totalClouds];
+
   int[] soundTimes;
+
   
   Level currentLevel;
   int currentTrackNum;
@@ -54,14 +58,16 @@ class GameplayState extends BaseState{
   }
  
   void draw(){
+    
       levelComplete = true;
-      background(0);
-          
+      background(143);
+      
       /** 
         BACKGROUND DRAW
       **/
-      //drawHills(hills);
-//      drawTrees(trees);
+      drawHills(hills);
+      drawClouds(clouds);
+      drawTrees(trees);
 
       /** LIVES **/
       player.drawLives();
