@@ -25,6 +25,7 @@ class MeatChunk{
   int lastUpdate;
   int framingError;
   int currentError;
+  boolean correctError;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -43,6 +44,7 @@ class MeatChunk{
     state = BOUNCING;
     lastUpdate = millis();
     framingError = 0;
+    correctError = true;
   }
   
   void increment(){
@@ -106,14 +108,20 @@ class MeatChunk{
   }
   
   void doBounce(int timeError) {
-    if (timeError>500) timeError = 0;
+    if (timeError > 500) timeError = 0;
+    correctError = !correctError;
     float period = track.getBeat(currentBeat);
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / SPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
     lastBounce = millis();
-    shouldBounceAgain = lastBounce + bounceWait - timeError;
+    if (correctError) {
+      shouldBounceAgain = lastBounce + bounceWait - timeError*2;
+    }
+    else {
+      shouldBounceAgain = lastBounce + bounceWait;
+    }
   }
   
   void doUpdate() {
