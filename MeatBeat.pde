@@ -36,7 +36,7 @@ Player player;  //player instance
 
 int levelIndex = 0; // keeps track of current level
 
-boolean INVINSIBLE = true;  //debugging purposes only
+boolean INVINSIBLE = false;  //debugging purposes only
 
 void setup(){
   frameRate(MAX_FRAME_RATE);
@@ -54,7 +54,8 @@ void setup(){
   cloudImage = loadShape("cloud.svg");
   meatLife = loadImage("sprite sheets/regularmeatball.png");
   meatImg = loadImage("sprite sheets/regularmeatball.png");
-  deadMeatImg = loadImage("sprite sheets/coldmeatball1.png");
+  deadMeatImg1 = loadImage("sprite sheets/coldmeatball1.png");
+  deadMeatImg2 = loadImage("sprite sheets/coldmeatball2.png");
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
   
   PFont font = createFont("chubhand.ttf", 48); 
