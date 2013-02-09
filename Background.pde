@@ -100,8 +100,40 @@ void setupClouds(Cloud[] clouds){
 void drawClouds(Cloud[] clouds){
   for(int i = 0; i < clouds.length; i++){
     Cloud cloud = clouds[i];
-    fill(255, 143, 150);
     shape(cloudImage, cloud.getX(), cloud.getY());
     cloud.setX(cloud.getRate() + cloud.getX());
   }
+}
+/*********
+LINES
+*********/
+/**************
+Ascending Lines
+**************/
+
+int green;
+int blue;
+int number = 20;
+float[] as;
+void setupLine(){
+   as = new float[number];
+   for(int i = 0; i < number; i++){
+     as[i] = HEIGHT/2 * random(1, 10);
+   } 
+}
+
+void drawLine(){
+ pushMatrix();
+  for(int i = 0; i < number; i++){
+    if(frameCount % 47 == 0){
+     green = random(0,255);
+     blue = random(0, 255);
+    }
+    stroke(255, green, blue);
+    line(0, as[i], WIDTH, as[i]);
+    as[i] = as[i] - BPM/150;
+    if(as[i] < 0)
+    as[i] = HEIGHT/2 * random(1,10);
+  }
+   popMatrix();
 }
