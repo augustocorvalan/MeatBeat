@@ -502,7 +502,7 @@ class GameplayState extends BaseState{
         setNextLevel();
       }
       if ((millis() - levelStart) <= NEW_LEVEL_TIME) {
-        text("LEVEL " + levelIndex,WIDTH/2,HEIGHT/4);
+        image(lvlImages[levelIndex-1],WIDTH/2-100,HEIGHT/4,200,40);
       }
   }
   
@@ -554,6 +554,7 @@ class GameplayState extends BaseState{
   
 }
 String[] levelNames = {"music/L1.mid","music/LEVEL02.mid","music/LEVEL03.mid","music/LEVEL04.mid","music/LEVEL05.mid","music/LEVEL06.mid","music/LEVEL07.mid"};
+String[] lvlImages = {loadImage("sprite sheets/level1.png"),loadImage("sprite sheets/level2.png"),loadImage("sprite sheets/level3.png"),loadImage("sprite sheets/level4.png"),loadImage("sprite sheets/level5.png"),loadImage("sprite sheets/level6.png"),loadImage("sprite sheets/level7.png")};
 
 String failsound = "sounds/soundeffects/meatbeatfailnoise.ogg";
                    
@@ -647,7 +648,6 @@ class MeatChunk{
     this.lastBounce = millis();
     this.bounceWait = 0;
     this.currentBeat = 0;
-    this.shouldBounceAgain = 0;
     makeInActive();
     if(INVINSIBLE){  //for debugging purposes only, take out later
       this.timeReturnFromFail = millis() + 128000*SPB;
@@ -665,6 +665,7 @@ class MeatChunk{
       bounceTimes[i] = bounceTimes[i-1] + track.getBeat(i)*1000;
       println(bounceTimes[i]);
     }*/
+    this.shouldBounceAgain = 0;
   }
   
   void increment(){
@@ -675,10 +676,12 @@ class MeatChunk{
   int move() {
     if (state != COMPLETE) {
       draw();
-      if((currentError = millis() - shouldBounceAgain) >= 0) { // ball should be bouncing
+
+      //if( currentError <= 5 || currentError >= 500 ) { // ball should be bouncing
       //if(millis() >= bounceTimes[currentBeat]) {
+        if ((shouldBounceAgain - millis()) <= 9  || millis() >= shouldBounceAgain) {
         //framingError += currentError;
-        println(currentError);
+        currentError = abs(millis() - shouldBounceAgain);
         doBounce(currentError);
         updateCurrentBeat();
         if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
@@ -738,7 +741,8 @@ class MeatChunk{
   void doBounce(int timeError) {
     if (timeError > 500) timeError = 0;
     //correctError = !correctError;
-    float period = track.getBeat(currentBeat) - timeError/1000f;
+    println(timeError/1000f);
+    float period = track.getBeat(currentBeat);
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / SPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
