@@ -118,17 +118,12 @@ class GameplayState extends BaseState{
   }
   
   void beatSuccess(int track) {
-    //playSound(currentLevel.getTrack(track).getSound());
-    //chunkArray[track].track.canSound=true;
     currentLevel.getTrack(track).canSound=true;
-    player.changeScore(1);
-    //chunkArray[track].canBounce=true;
-    
+    player.changeScore(1);    
   }
   
   void beatFailure(int track) {
     //playSound(failsound);
-    //chunkArray[track].track.canSound=false;
     currentLevel.getTrack(track).canSound=false;
     player.decreaseLives();
     chunkArray[track].fail();
