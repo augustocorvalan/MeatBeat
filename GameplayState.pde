@@ -118,6 +118,7 @@ class GameplayState extends BaseState{
     if(key=='q') println(frameRate);
     if(key=='w') playSound(failsound);
     //if(key=='p') noLoop();
+    if(key=='x') setState(FINISH_STATE);
   }
     
   void cleanup(){
