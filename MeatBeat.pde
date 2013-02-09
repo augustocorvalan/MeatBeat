@@ -23,7 +23,7 @@ int currentState;
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
 
-static final int GROUND = HEIGHT- 50;
+static final int GROUND = height - 50;
 
 PImage meatLife;  //image instance for meat life
 PImage fist;
