@@ -1,5 +1,5 @@
 PImage grass = loadImage("sprite sheets/grassblock.png");
-final static int GRASS_HEIGHT = height - GROUND;
+final static int GRASS_HEIGHT = HEIGHT - GROUND;
 
 class Baseline {
   

@@ -38,6 +38,8 @@ class Level {
     for(int i=0; i < numTracks; i++) {
       if(levelIndex==0)
         beats[i][0] = beats[i][0] - SPB/2;
+      if(levelIndex==2)
+        beats[i][0] = beats[i][0] + SPB*0.25;
       if(levelIndex==3)
         beats[i][0] = beats[i][0] + SPB;
       if(levelIndex==4)
