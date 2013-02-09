@@ -1,4 +1,5 @@
 String[] levelNames = {"music/L1.mid","music/LEVEL02.mid","music/LEVEL03.mid","music/LEVEL04.mid","music/LEVEL05.mid","music/LEVEL06.mid","music/LEVEL07.mid"};
+String[] lvlImages = {loadImage("sprite sheets/level1.png"),loadImage("sprite sheets/level2.png"),loadImage("sprite sheets/level3.png"),loadImage("sprite sheets/level4.png"),loadImage("sprite sheets/level5.png"),loadImage("sprite sheets/level6.png"),loadImage("sprite sheets/level7.png")};
 
 String failsound = "sounds/soundeffects/meatbeatfailnoise.ogg";
                    

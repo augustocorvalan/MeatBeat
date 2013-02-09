@@ -97,7 +97,7 @@ class GameplayState extends BaseState{
         setNextLevel();
       }
       if ((millis() - levelStart) <= NEW_LEVEL_TIME) {
-        text("LEVEL " + levelIndex,WIDTH/2,HEIGHT/4);
+        image(lvlImages[levelIndex-1],WIDTH/2-100,HEIGHT/4,200,40);
       }
   }
   

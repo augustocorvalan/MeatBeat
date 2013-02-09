@@ -37,7 +37,6 @@ class MeatChunk{
     this.lastBounce = millis();
     this.bounceWait = 0;
     this.currentBeat = 0;
-    this.shouldBounceAgain = 0;
     makeInActive();
     if(INVINSIBLE){  //for debugging purposes only, take out later
       this.timeReturnFromFail = millis() + 128000*SPB;
@@ -55,6 +54,7 @@ class MeatChunk{
       bounceTimes[i] = bounceTimes[i-1] + track.getBeat(i)*1000;
       println(bounceTimes[i]);
     }*/
+    this.shouldBounceAgain = 0;
   }
   
   void increment(){
@@ -65,10 +65,12 @@ class MeatChunk{
   int move() {
     if (state != COMPLETE) {
       draw();
-      if((currentError = millis() - shouldBounceAgain) >= 0) { // ball should be bouncing
+
+      //if( currentError <= 5 || currentError >= 500 ) { // ball should be bouncing
       //if(millis() >= bounceTimes[currentBeat]) {
+        if ((shouldBounceAgain - millis()) <= 9  || millis() >= shouldBounceAgain) {
         //framingError += currentError;
-        println(currentError);
+        currentError = abs(millis() - shouldBounceAgain);
         doBounce(currentError);
         updateCurrentBeat();
         if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
@@ -128,7 +130,8 @@ class MeatChunk{
   void doBounce(int timeError) {
     if (timeError > 500) timeError = 0;
     //correctError = !correctError;
-    float period = track.getBeat(currentBeat) - timeError/1000f;
+    println(timeError/1000f);
+    float period = track.getBeat(currentBeat);
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / SPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
