@@ -31,12 +31,13 @@ PShape cloudImage;  //image for the cloud
 PImage meatImg;  //image for bouncing meat
 PImage deadMeatImg;  //inactive meat ball image
 String[] fists = {"sprite sheets/fist1.png","sprite sheets/fist2.png","sprite sheets/fist3.png","sprite sheets/fist4.png","sprite sheets/fist5.png","sprite sheets/fist6.png","sprite sheets/fist7.png"};
+PImage[] numbersImg = new PImage[10];
 
 Player player;  //player instance
 
 int levelIndex = 0; // keeps track of current level
 
-boolean INVINSIBLE = true;  //debugging purposes only
+boolean INVINSIBLE = false;  //debugging purposes only
 
 void setup(){
   frameRate(MAX_FRAME_RATE);
@@ -55,6 +56,9 @@ void setup(){
   meatLife = loadImage("sprite sheets/regularmeatball.png");
   meatImg = loadImage("sprite sheets/regularmeatball.png");
   deadMeatImg = loadImage("sprite sheets/coldmeatball1.png");
+  for(int i = 0; i < 10; i++){
+    numbersImg[i] = loadImage("sprite sheets/" + i + ".png"); 
+  }
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
   
   PFont font = createFont("chubhand.ttf", 48); 
