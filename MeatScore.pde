@@ -21,11 +21,11 @@ void setupScore(){
 
 void drawScore(){
   //draw background grill
-  image(grillImg, WIDTH/5, HEIGHT/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
+  image(grillImg, width/5, height/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
   for(int i = 0; i < digits.size(); i++){
     int digit = digits.get(i);
     PImage digitImg = numbersImg[digit];
     int offset = 1.58;
-    image(digitImg, WIDTH/offset - (i * MEATX), HEIGHT/2, MEATX, MEATY);
+    image(digitImg, width/offset - (i * MEATX), height/2, MEATX, MEATY);
   }  
 }

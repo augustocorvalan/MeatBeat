@@ -13,7 +13,7 @@ class FinishState extends BaseState{
  
   void draw(){
     background(0);
-    text("Hey meatbeater! Thanks for playing!", WIDTH/2, HEIGHT/5);
+    text("Hey meatbeater! Thanks for playing!", width/2, height/5);
 //    text("Total score: " + player.getScore(), WIDTH/2, HEIGHT/2 + 60);
     drawScore();
     

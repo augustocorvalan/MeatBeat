@@ -27,16 +27,16 @@ class Player{
    void drawScore(){
      pushMatrix();
      fill(255);
-     text(score, WIDTH-50, HEIGHT/15);  //number of lives
+     text(score, width-50, height/15);  //number of lives
      popMatrix();
    }
    
    void drawLives(){
      pushMatrix();
      fill(255);
-     image(meatLife, WIDTH/10, HEIGHT/120, 38, 38);  //meatball
-     text("x", WIDTH/12, HEIGHT/15); //x text
-     text(lives, WIDTH/25, HEIGHT/15);  //number of lives
+     image(meatLife, width/10, height/120, 38, 38);  //meatball
+     text("x", width/12, height/15); //x text
+     text(lives, width/25, height/15);  //number of lives
      popMatrix();
    }
 }

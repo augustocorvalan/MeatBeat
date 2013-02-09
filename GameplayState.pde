@@ -2,7 +2,7 @@ class GameplayState extends BaseState{
   /** 
     BACKGROUND VARIABLES
   **/
-  int totalHills = 3;
+  int totalHills = width * 0.00375;
   Hill[] hills = new Hill[totalHills];
   int totalTrees = 3;
   Tree[] trees = new Tree[totalTrees];
@@ -106,7 +106,7 @@ class GameplayState extends BaseState{
         setNextLevel();
       }
       if ((millis() - levelStart) <= NEW_LEVEL_TIME) {
-        image(lvlImages[levelIndex-1],WIDTH/2-100,HEIGHT/4,200,40);
+        image(lvlImages[levelIndex-1], width/2-100, height/4,200,40);
       }
   }
   

@@ -30,8 +30,8 @@ class BetweenLevelsState extends BaseState {
   
   void drawGB() {
     fill(255);
-    if (xPos <= WIDTH + 200) {
-      text(goodbye, xPos, HEIGHT/2);  //number of lives
+    if (xPos <= width + 200) {
+      text(goodbye, xPos, height/2);  //number of lives
       xPos = xPos + 10;
     }
     else {
@@ -42,8 +42,8 @@ class BetweenLevelsState extends BaseState {
   
   void drawH() {
     fill(255);
-    if (xPos <= WIDTH + 200) {
-      text(hello, xPos, HEIGHT/2);  //number of lives
+    if (xPos <= width + 200) {
+      text(hello, xPos, height/2);  //number of lives
       xPos = xPos + 10;
     }
     else  {
