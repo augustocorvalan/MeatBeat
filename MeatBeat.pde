@@ -12,7 +12,7 @@ static final int BPM = 110;
 static final float SPB = 0.5454545;
 boolean startMaster = false;
 
-static final int INITIAL_LIVES = 10;
+static final int INITIAL_LIVES = 100;
 
 static final int MAX_FRAME_RATE = 120;
 int fps = 0;  //how many frames drawn this second  
@@ -28,10 +28,14 @@ static final int GROUND = HEIGHT - 50;
 PImage meatLife;  //image instance for meat life
 PImage fist;
 PShape cloudImage;  //image for the cloud
+PImage meatImg;  //image for bouncing meat
+PImage deadMeatImg;  //inactive meat ball image
 
 Player player;  //player instance
 
 int levelIndex = 0; // keeps track of current level
+
+boolean INVINSIBLE = false;  //debugging purposes only
 
 void setup(){
   frameRate(MAX_FRAME_RATE);
@@ -48,6 +52,8 @@ void setup(){
   
   cloudImage = loadShape("cloud.svg");
   meatLife = loadImage("sprite sheets/regularmeatball.png");
+  meatImg = loadImage("sprite sheets/regularmeatball.png");
+  deadMeatImg = loadImage("sprite sheets/coldmeatball1.png");
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
   fist = loadImage("sprite sheets/fist1.png");
   
