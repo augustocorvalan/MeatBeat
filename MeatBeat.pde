@@ -44,7 +44,7 @@ boolean INVINSIBLE = false;  //debugging purposes only
 void setup(){
   frameRate(MAX_FRAME_RATE);
   getBeats(levelNames[levelIndex]);
-  size(800, 600);
+  size(window.innerWidth, window.innerHeight); 
   background(255);
   currentState = FIRST_STATE;
   states = new BaseState[STATE_COUNT];
