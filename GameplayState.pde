@@ -155,7 +155,7 @@ class GameplayState extends BaseState{
   void beatFailure(int track) {
     player.decreaseLives();
     chunkArray[track].fail();
-    playFail();
+    //playFail();
   }
   
 }

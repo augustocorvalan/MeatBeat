@@ -80,7 +80,7 @@ class MeatChunk{
         if (currentBeat != 0) {
           expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
           diff = master.currentTime - expectedMusicTime;
-          println("diff = " + diff);
+          //println("diff = " + diff);
         }
         currentError = abs(millis() - shouldBounceAgain);
         doBounce(diff);
@@ -174,22 +174,15 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + 2000*SPB;    // start bouncing in ghost mode after two beats
+    shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
     timeReturnFromFail = failTime + 4000*SPB;   // become active again after four beats
-    updateCurrentBeat();
+    expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
     updateCurrentBeat();
     //state = IN_HELL;
     yPosition = HEIGHT + MEAT_HEIGHT/2;
-    velocity = (GROUND + 1.5*MEAT_HEIGHT)/-8.5f;
+    velocity = (GROUND + MEAT_HEIGHT)/-8.5f;
     gravity = 0;
-    //returnFromHell();
-  }
-  
-  void returnFromHell() {
-    /*if ((millis() - failTime) >= TIME_IN_HELL) {
-      yPosition = yPosition + velocity;
-      println("returning" + yPosition);
-    }*/
+    //playFail();
   }
   
   void updateCurrentBeat() {
