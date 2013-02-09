@@ -12,7 +12,7 @@ static final int BPM = 110;
 static final float SPB = 0.5454545;
 boolean startMaster = false;
 
-static final int INITIAL_LIVES = 10;
+static final int INITIAL_LIVES = 100;
 
 static final int MAX_FRAME_RATE = 120;
 int fps = 0;  //how many frames drawn this second  
