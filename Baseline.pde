@@ -21,7 +21,7 @@ class Baseline {
       x1 = spaces[i] + MEAT_WIDTH;
     }
     //line(x1,GROUND,WIDTH,GROUND);
-    image(grass,x1,GROUND,WIDTH-x1,GRASS_HEIGHT);
+    image(grass,x1,GROUND,width-x1,GRASS_HEIGHT);
   }
   
 }
