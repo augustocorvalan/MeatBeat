@@ -100,7 +100,7 @@ class GameplayState extends BaseState{
           //playSound(currentLevel.getTrack(0).getSound());
           //soundTimes[0] = millis();
       }*/
-      if (levelComplete) {
+      if (levelComplete && millis() > lvlTimes[levelIndex]) {
         //setState(BETWEEN_LEVELS_STATE);
         //setState(GAMEPLAY_STATE);
         setNextLevel();

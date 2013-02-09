@@ -76,7 +76,6 @@ class MeatChunk{
       if (millis() >= shouldBounceAgain) {
         //framingError += currentError;
         float diff = 0;
-        setMaster(0);
         if (currentBeat != 0) {
           expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
           diff = master.currentTime - expectedMusicTime;
@@ -179,8 +178,8 @@ class MeatChunk{
     expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
     updateCurrentBeat();
     //state = IN_HELL;
-    yPosition = HEIGHT + MEAT_HEIGHT/2;
-    velocity = (GROUND + MEAT_HEIGHT)/-8.5f;
+    yPosition = HEIGHT + MEAT_HEIGHT;
+    velocity = -1/1000f;
     gravity = 0;
     //playFail();
   }

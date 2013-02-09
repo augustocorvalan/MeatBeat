@@ -3,7 +3,6 @@ static final int PANEL_HEIGHT = 90;
 
 class Panel{
   float xPosition, yPosition, origY;
-  int opacity;
   boolean offScreen;
   int lastDraw;
   int waitTime = 200; // ms between allowable presses
@@ -12,7 +11,6 @@ class Panel{
     this.xPosition = xPosition;
     this.yPosition = yPosition;
     this.origY = yPosition;
-    opacity = 255;
     offScreen = true;
     lastDraw = 0;
   }
@@ -32,8 +30,6 @@ class Panel{
       image(fist,xPosition,yPosition,PANEL_WIDTH,PANEL_HEIGHT);
       if( (millis() - lastDraw) > waitTime) {
         offScreen = true;
-        //opacity = 255;
-        //yPosition = origY;
       }
     }
   }
