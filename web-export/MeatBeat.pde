@@ -523,7 +523,7 @@ class GameplayState extends BaseState{
           //playSound(currentLevel.getTrack(0).getSound());
           //soundTimes[0] = millis();
       }*/
-      if (levelComplete) {
+      if (levelComplete && millis() > lvlTimes[levelIndex]) {
         //setState(BETWEEN_LEVELS_STATE);
         //setState(GAMEPLAY_STATE);
         setNextLevel();
@@ -722,7 +722,6 @@ class MeatChunk{
       if (millis() >= shouldBounceAgain) {
         //framingError += currentError;
         float diff = 0;
-        setMaster(0);
         if (currentBeat != 0) {
           expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
           diff = master.currentTime - expectedMusicTime;
@@ -825,8 +824,8 @@ class MeatChunk{
     expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
     updateCurrentBeat();
     //state = IN_HELL;
-    yPosition = HEIGHT + MEAT_HEIGHT/2;
-    velocity = (GROUND + MEAT_HEIGHT)/-8.5f;
+    yPosition = HEIGHT + MEAT_HEIGHT;
+    velocity = -1/1000f;
     gravity = 0;
     //playFail();
   }
@@ -1032,7 +1031,6 @@ static final int PANEL_HEIGHT = 90;
 
 class Panel{
   float xPosition, yPosition, origY;
-  int opacity;
   boolean offScreen;
   int lastDraw;
   int waitTime = 200; // ms between allowable presses
@@ -1041,7 +1039,6 @@ class Panel{
     this.xPosition = xPosition;
     this.yPosition = yPosition;
     this.origY = yPosition;
-    opacity = 255;
     offScreen = true;
     lastDraw = 0;
   }
@@ -1061,8 +1058,6 @@ class Panel{
       image(fist,xPosition,yPosition,PANEL_WIDTH,PANEL_HEIGHT);
       if( (millis() - lastDraw) > waitTime) {
         offScreen = true;
-        //opacity = 255;
-        //yPosition = origY;
       }
     }
   }

@@ -30,6 +30,7 @@ class MeatChunk{
   int expectedMusicTime;
   PImage drawImg;
   int lastBlueSwitch;
+  int previousBounceTime;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -107,7 +108,6 @@ class MeatChunk{
   
   void makeInActive() {
     active = false;
-    opacity = 50;
     drawImg = deadMeatImg1;
   }
   
@@ -153,6 +153,7 @@ class MeatChunk{
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
     lastBounce = millis();
+    previousBounceTime = shouldBounceAgain;
     shouldBounceAgain = lastBounce + bounceWait;// - timeError*2;
   }
   
@@ -173,14 +174,16 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
+    //shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
     timeReturnFromFail = failTime + 4000*SPB;   // become active again after four beats
-    expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
-    updateCurrentBeat();
+    //expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
+    //updateCurrentBeat();
     //state = IN_HELL;
-    yPosition = height + MEAT_HEIGHT;
-    velocity = -1/1000f;
-    gravity = 0;
+
+    //yPosition = HEIGHT + MEAT_HEIGHT;
+    //velocity = 0;
+    //gravity = 0;
+
     //playFail();
   }
   
