@@ -13,7 +13,7 @@ class MeatChunk{
   float velocity;
   Track track;
   int lastBounce;
-  int bounceWait;
+  float bounceWait;
   int currentBeat;
   float unitHeight = height / 3;
   int shouldBounceAgain;
@@ -22,6 +22,9 @@ class MeatChunk{
   int timeReturnFromFail;
   int failTime;
   int state;
+  int lastUpdate;
+  int framingError;
+  int currentError;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -29,14 +32,17 @@ class MeatChunk{
     this.gravity = g;
     this.velocity = vy;
     this.track = t;
+    //track.getBeats()[0] = track.getBeats()[0] + SPB;
     this.lastBounce = millis();
-    this.bounceWait = t.getBeat(0)*1000;
+    this.bounceWait = 0;
     this.currentBeat = -1;
-    this.shouldBounceAgain = millis() + spb*1000;
+    this.shouldBounceAgain = 0;
     makeInActive();
-    this.timeReturnFromFail = millis() + 64000*spb;
+    this.timeReturnFromFail = millis() + 128000*SPB;
     this.failTime = 0;
     state = BOUNCING;
+    lastUpdate = millis();
+    framingError = 0;
   }
   
   void increment(){
@@ -47,9 +53,11 @@ class MeatChunk{
   int move() {
     if (state != COMPLETE) {
       draw();
-      if(millis() > shouldBounceAgain) { // ball should be bouncing
+      if((currentError = millis() - shouldBounceAgain) >= 0) { // ball should be bouncing
+        framingError += currentError;
+        println(currentError);
         updateCurrentBeat();
-        doBounce();
+        doBounce(currentError);
         if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
           makeActive();
           return 0;  // NOT IN PLAY YET. give player a bounce to recover.
@@ -97,14 +105,15 @@ class MeatChunk{
     }
   }
   
-  void doBounce() {
-    lastBounce = millis();
+  void doBounce(int timeError) {
+    if (timeError>500) timeError = 0;
     float period = track.getBeat(currentBeat);
-    float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / currentSPB);
+    float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / SPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
-    shouldBounceAgain = lastBounce + bounceWait;
+    lastBounce = millis();
+    shouldBounceAgain = lastBounce + bounceWait - timeError;
   }
   
   void doUpdate() {
@@ -124,8 +133,8 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + 2000*currentSPB;    // start bouncing in ghost mode after two beats
-    timeReturnFromFail = failTime + 4000*currentSPB;   // become active again after four beats
+    shouldBounceAgain = failTime + 2000*SPB;    // start bouncing in ghost mode after two beats
+    timeReturnFromFail = failTime + 4000*SPB;   // become active again after four beats
     updateCurrentBeat();
     updateCurrentBeat();
     //state = IN_HELL;

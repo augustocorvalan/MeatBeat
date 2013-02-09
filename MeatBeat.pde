@@ -8,11 +8,13 @@ static final int GAMEPLAY_STATE = 1;
 static final int FINISH_STATE = 2;
 static final int BETWEEN_LEVELS_STATE = 3;
 static final int STATE_COUNT = 4;
+static final int BPM = 110;
+static final float SPB = 0.5454545;
 boolean startMaster = false;
 
 static final int INITIAL_LIVES = 10;
 
-static final int MAX_FRAME_RATE = 30;
+static final int MAX_FRAME_RATE = 120;
 int fps = 0;  //how many frames drawn this second  
 
 BaseState[] states;
@@ -29,7 +31,6 @@ PShape cloudImage;  //image for the cloud
 Player player;  //player instance
 
 int levelIndex = 0; // keeps track of current level
-int currentSPB;
 
 void setup(){
   frameRate(MAX_FRAME_RATE);

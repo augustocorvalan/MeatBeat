@@ -9,6 +9,8 @@ class Track {
   
   Track(float[] beatmatrix, String s, char kv) {
     beats = beatmatrix;
+    //beats[0] = beats[0] - SPB/2;
+    println(beats[0]);
     sound = s;
     keyVal = kv;
     canSound = true;

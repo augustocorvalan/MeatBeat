@@ -57,15 +57,16 @@ function getBeats(file) {
     }
 
     // convert tick info to time in seconds
-    n = metaTrack.length;
+    /*n = metaTrack.length;
     for (i = 0; i < n; ++i) {
       var e = metaTrack[i];
       if (e.type === "meta" && e.subtype === "setTempo") {
         secondsPerBeat = e.microsecondsPerBeat / 1e6;
       }
     }
-    if (!secondsPerBeat) secondsPerBeat = 60 / 120;
+    if (!secondsPerBeat) secondsPerBeat = 60 / 120; */
     
+    secondsPerBeat = 0.5454545;
 
     var secondsPerTick = secondsPerBeat / ticksPerBeat; // GLOBAL, processing needs it.
     for (j = 0; j < beats.length; ++j) {
