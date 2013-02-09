@@ -59,11 +59,12 @@ void drawHills(Hill[] hills){
 CLOUDS
 *********/
 class Cloud{
-  int x, y, scale, rate;
+  int x, y, scale, rate, baseWidth, baseHeight;
   Cloud(int x, int y, int scale){
     this.x = x;
     this.y = y;
     this.scale = scale;
+    baseWidth = baseHeight = 100;
   }
   int setX(int x){
     this.x = x;
@@ -83,25 +84,41 @@ class Cloud{
   void setRate(int rate){
     this.rate = rate;
   }
+  int getWidth(){
+    return baseWidth * scale;
+  }
+  int getHeight(){
+    return baseHeight * scale;
+  }
 }
 
 void setupClouds(Cloud[] clouds){
   for(int i = 0; i < clouds.length; i++){
-    float yOffset = random(0.6, 1);
-    int y = HEIGHT - HEIGHT * yOffset;
-    float rateOffset = random(400, 1000);
-    int baseRate = BPM;
-    int rt = baseRate/rateOffset;
-    clouds[i] = new Cloud(-100, y, 1);
-    clouds[i].setRate(rt);
+    clouds[i] = setupCloud();
   }
+}
+
+Cloud setupCloud(){
+  int x = -200 - floor(random(50,100));
+  float yOffset = random(0.6, 1);
+  int y = HEIGHT - HEIGHT * yOffset;
+  float rateOffset = random(300, 800);
+  int baseRate = BPM;
+  int rt = baseRate/rateOffset;
+  Cloud cloud = new Cloud(x, y, 1);
+  cloud.setRate(rt);
+  return cloud;
 }
 
 void drawClouds(Cloud[] clouds){
   for(int i = 0; i < clouds.length; i++){
     Cloud cloud = clouds[i];
-    shape(cloudImage, cloud.getX(), cloud.getY());
+    cloudHeight = cloud.getHeight();
+    shape(cloudImage, cloud.getX(), cloud.getY(), cloud.getWidth(), cloud.getHeight());
     cloud.setX(cloud.getRate() + cloud.getX());
+    if(cloud.getX() > WIDTH + cloud.getWidth()){  //if a cloud nears the edge of the screen, add another
+      clouds[i] = setupCloud();
+    }
   }
 }
 /*********

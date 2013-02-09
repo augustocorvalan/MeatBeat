@@ -8,6 +8,7 @@ static final int GAMEPLAY_STATE = 1;
 static final int FINISH_STATE = 2;
 static final int BETWEEN_LEVELS_STATE = 3;
 static final int STATE_COUNT = 4;
+boolean startMaster = false;
 
 static final int INITIAL_LIVES = 10;
 

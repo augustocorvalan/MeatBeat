@@ -41,7 +41,9 @@ class GameplayState extends BaseState{
 //    player.setupLives();
     currentLevel = new Level(beatsarray,soundNames[0]);
     currentSPB = spb;
-    getBeats(levelNames[1]);
+    levelIndex++;
+    getBeats(levelNames[levelIndex]);
+    println(levelIndex);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
@@ -59,6 +61,11 @@ class GameplayState extends BaseState{
   }
  
   void draw(){
+      if (!startMaster) {
+        playMaster();
+        startMaster = true;
+      }
+      levelComplete = true;
       background(143);
       
       /** 
@@ -80,13 +87,23 @@ class GameplayState extends BaseState{
       bl.draw();
       
       for(int i = 0; i < currentTrackNum; i++){
-        shouldCheckBeat[i] = chunkArray[i].move();
         panelArray[i].draw();
+        shouldCheckBeat[i] = chunkArray[i].move();
+        if (shouldCheckBeat[i]==1) {
+          checkBeatSuccess(i);
+        }
+        if (chunkArray[i].state != COMPLETE) {
+          levelComplete = false;
+        }
       }
-      if (shouldCheckBeat[0]==1) {
+      /*if (shouldCheckBeat[0]==1) {
           checkBeatSuccess(0);
-          playSound(currentLevel.getTrack(0).getSound());
+          //playSound(currentLevel.getTrack(0).getSound());
           //soundTimes[0] = millis();
+      }*/
+      if (levelComplete) {
+        //setState(BETWEEN_LEVELS_STATE);
+        setState(GAMEPLAY_STATE);
       }
   }
   
@@ -135,6 +152,7 @@ class GameplayState extends BaseState{
     currentLevel.getTrack(track).canSound=false;
     player.decreaseLives();
     chunkArray[track].fail();
+    playFail();
   }
   
 }

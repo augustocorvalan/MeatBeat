@@ -9,7 +9,7 @@ class Panel{
   //int opacityInterval = round(255/frameRate);
   boolean offScreen;
   int lastDraw;
-  int waitTime = 100; // ms between allowable presses
+  int waitTime = 200; // ms between allowable presses
   
   Panel(float xPosition, float yPosition){
     this.xPosition = xPosition;
