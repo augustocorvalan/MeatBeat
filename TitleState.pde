@@ -3,7 +3,7 @@ class TitleState extends BaseState{
   PImage logo = loadImage("sprite sheets/logo.png");
   PImage play = loadImage("sprite sheets/play.png");
   void setup(){
-    background(255, 0, 0);
+    background(50);
 //    text("MeatBeat: The Test Title Screen", width/2, height/2);
     playIntro();
   }
