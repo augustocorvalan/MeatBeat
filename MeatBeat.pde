@@ -23,7 +23,7 @@ int currentState;
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
 
-static final int GROUND = HEIGHT- 50;
+static final int GROUND = height - 50;
 
 PImage meatLife;  //image instance for meat life
 PImage fist;
@@ -33,6 +33,7 @@ PImage deadMeatImg;  //inactive meat ball image
 String[] fists = {"sprite sheets/fist1.png","sprite sheets/fist2.png","sprite sheets/fist3.png","sprite sheets/fist4.png","sprite sheets/fist5.png","sprite sheets/fist6.png","sprite sheets/fist7.png"};
 PImage[] numbersImg = new PImage[10];  //holds the number images
 PImage grillImg;
+PImage replayImg;
 
 Player player;  //player instance
 
@@ -63,6 +64,7 @@ void setup(){
   }
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
   grillImg = loadImage("sprite sheets/grill.png");
+  replayImg = loadImage("sprite sheets/replay.png");
   
   PFont font = createFont("chubhand.ttf", 48); 
   textFont(font, 48);

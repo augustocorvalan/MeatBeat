@@ -58,7 +58,7 @@ Tree[] setupTrees(int treeTotal){
   for(int i = 0; i < treeTotal; i++){
     //randomly generate height and x between range 
     int height = floor(random(shortestTree, tallestTree));
-    int y = HEIGHT - height;
+    int y = height - height;
     trees[i] = new Tree(x, y, height);
     trees[i].setOpacity(random(75, 200));  //randomize tree opacity
     trees[i].setStroke(random(5, 10));  //randomize stroke
@@ -70,7 +70,7 @@ Tree[] setupTrees(int treeTotal){
 
 void drawTrees(Tree[] trees, color[] c){
   pushMatrix();
-  translate(0, HEIGHT-50);
+  translate(0, height-50);
   counter++;
   float constant = 0.25; //constant to slow down bps artificially
   float bps = BPM/60; 

@@ -179,9 +179,11 @@ class MeatChunk{
     //expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
     //updateCurrentBeat();
     //state = IN_HELL;
+
     //yPosition = HEIGHT + MEAT_HEIGHT;
     //velocity = 0;
     //gravity = 0;
+
     //playFail();
   }
   

@@ -101,7 +101,7 @@ void setupClouds(Cloud[] clouds){
 Cloud setupCloud(){
   int x = -200 - floor(random(50,100));
   float yOffset = random(0.6, 1);
-  int y = HEIGHT - HEIGHT * yOffset;
+  int y = height - height * yOffset;
   float rateOffset = random(300, 800);
   int baseRate = BPM;
   int rt = baseRate/rateOffset;
@@ -139,7 +139,7 @@ void setupLine(){
    as = new float[number];
    rate = new float[number];
    for(int i = 0; i < number; i++){
-     as[i] = HEIGHT/2 * random(1, 10);
+     as[i] = height/2 * random(1, 10);
      rate[i] = random(1,2);
    } 
 }
@@ -151,7 +151,7 @@ void drawLine(){
     line(0, as[i], width, as[i]);
       as[i] = as[i] - rate[i] * BPM/150;
     if(as[i] < 0)
-      as[i] = HEIGHT/2 * random(1,10);
+      as[i] = height/2 * random(1,10);
   }
    popMatrix();
 }
