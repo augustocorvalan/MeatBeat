@@ -27,10 +27,14 @@ static final int GROUND = HEIGHT - 50;
 
 PImage meatLife;  //image instance for meat life
 PShape cloudImage;  //image for the cloud
+PImage meatImg;  //image for bouncing meat
+PImage deadMeatImg;  //inactive meat ball image
 
 Player player;  //player instance
 
 int levelIndex = 0; // keeps track of current level
+
+boolean INVINSIBLE = false;  //debugging purposes only
 
 void setup(){
   frameRate(MAX_FRAME_RATE);
@@ -46,6 +50,8 @@ void setup(){
   player = new Player(INITIAL_LIVES,0);
   
   cloudImage = loadShape("cloud.svg");
+  meatImg = loadImage("sprite sheets/regularmeatball.png");
+  deadMeatImg = loadImage("sprite sheets/coldmeatball1.png");
   meatLife = loadImage("sprite sheets/meatball.png");
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
   PFont font = createFont("chubhand.ttf", 48); 
