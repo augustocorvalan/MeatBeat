@@ -31,11 +31,10 @@ class MeatChunk{
     this.track = t;
     this.lastBounce = millis();
     this.bounceWait = t.getBeat(0)*1000;
-    this.currentBeat = 0;
+    this.currentBeat = -1;
     this.shouldBounceAgain = 0;
-    this.active = true;
-    this.opacity = 255;
-    this.timeReturnFromFail = 0;
+    makeInActive();
+    this.timeReturnFromFail = millis() + 4000*spb;
     this.failTime = 0;
     state = BOUNCING;
   }

@@ -41,6 +41,7 @@ void setup(){
     states[i] = createState(i); 
   }
   setState(FIRST_STATE);
+  player = new Player(INITIAL_LIVES,0);
   
   cloudImage = loadShape("cloud.svg");
   meatLife = loadImage("sprite sheets/meatball.png");
