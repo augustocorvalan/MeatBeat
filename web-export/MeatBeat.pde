@@ -23,7 +23,7 @@ int currentState;
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
 
-static final int GROUND = HEIGHT - 50;
+static final int GROUND = HEIGHT- 50;
 
 PImage meatLife;  //image instance for meat life
 PImage fist;
@@ -105,28 +105,28 @@ BaseState createState(int state){
 HILL
 *********/
 class Hill{
-  float x, y, width, height, start, stop;
-  Hill(float x, float y, float width, float height, float start, float stop){
+  float x, y, w, h, start, stop;
+  Hill(float x, float y, float w, float h, float start, float stop){
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
+    this.w = w;
+    this.h = h;
     this.start = start;
     this.stop = stop;
   }
   void draw(){
-    arc(x, y, width, height, start, stop);
+    arc(x, y, w, h, start, stop);
   }
 }
 
 Hill setupHill(float xOffset, float heightOffset, float widthOffset){
-  float x = 2*WIDTH/10 + xOffset;
-  float y = HEIGHT/10 + HEIGHT * 0.9;
-  float width = WIDTH/2 + widthOffset;
-  float height =  HEIGHT * 1 + heightOffset;
+  float x = 2*width/10 + xOffset;
+  float y = height/10 + height * 0.9;
+  float hillWidth = width/2 + widthOffset;
+  float hillHeight =  height * 1 + heightOffset;
   float start = -PI;
   float stop = 0;
-  Hill h = new Hill(x, y, width, height, start, stop);
+  Hill h = new Hill(x, y, hillWidth, hillHeight, start, stop);
   return h;
 }
 
@@ -138,7 +138,7 @@ void setupHills(Hill[] hills){
   float widthOffset = 0;
   for(int i = 0; i < number; i++){
     hills[i] = setupHill(xOffset, heightOffset, widthOffset);
-    xOffset += WIDTH/number;
+    xOffset += width/number;
     heightOffset += 100;
     widthOffset += 25;
     if(int(random(2)) == 1) heightOffset *= -1;  //randomly make half shorter
@@ -222,7 +222,7 @@ void drawClouds(Cloud[] clouds, color[] c){
     cloudHeight = cloud.getHeight();
     shape(cloudImage, cloud.getX(), cloud.getY(), cloud.getWidth(), cloud.getHeight());
     cloud.setX(cloud.getRate() + cloud.getX());
-    if(cloud.getX() > WIDTH + cloud.getWidth()){  //if a cloud nears the edge of the screen, add another
+    if(cloud.getX() > width + cloud.getWidth()){  //if a cloud nears the edge of the screen, add another
       clouds[i] = setupCloud();
     }
   }
@@ -251,7 +251,7 @@ void drawLine(){
  pushMatrix();
  strokeWeight(4);
   for(int i = 0; i < number; i++){
-    line(0, as[i], WIDTH, as[i]);
+    line(0, as[i], width, as[i]);
       as[i] = as[i] - rate[i] * BPM/150;
     if(as[i] < 0)
       as[i] = HEIGHT/2 * random(1,10);
@@ -326,8 +326,8 @@ class BetweenLevelsState extends BaseState {
   
   void drawGB() {
     fill(255);
-    if (xPos <= WIDTH + 200) {
-      text(goodbye, xPos, HEIGHT/2);  //number of lives
+    if (xPos <= width + 200) {
+      text(goodbye, xPos, height/2);  //number of lives
       xPos = xPos + 10;
     }
     else {
@@ -338,8 +338,8 @@ class BetweenLevelsState extends BaseState {
   
   void drawH() {
     fill(255);
-    if (xPos <= WIDTH + 200) {
-      text(hello, xPos, HEIGHT/2);  //number of lives
+    if (xPos <= width + 200) {
+      text(hello, xPos, height/2);  //number of lives
       xPos = xPos + 10;
     }
     else  {
@@ -407,7 +407,7 @@ class FinishState extends BaseState{
  
   void draw(){
     background(0);
-    text("Hey meatbeater! Thanks for playing!", WIDTH/2, HEIGHT/5);
+    text("Hey meatbeater! Thanks for playing!", width/2, height/5);
 //    text("Total score: " + player.getScore(), WIDTH/2, HEIGHT/2 + 60);
     drawScore();
     
@@ -425,7 +425,7 @@ class GameplayState extends BaseState{
   /** 
     BACKGROUND VARIABLES
   **/
-  int totalHills = 3;
+  int totalHills = width * 0.00375;
   Hill[] hills = new Hill[totalHills];
   int totalTrees = 3;
   Tree[] trees = new Tree[totalTrees];
@@ -529,7 +529,7 @@ class GameplayState extends BaseState{
         setNextLevel();
       }
       if ((millis() - levelStart) <= NEW_LEVEL_TIME) {
-        image(lvlImages[levelIndex-1],WIDTH/2-100,HEIGHT/4,200,40);
+        image(lvlImages[levelIndex-1], width/2-100, height/4,200,40);
       }
   }
   
@@ -578,7 +578,7 @@ class GameplayState extends BaseState{
   void beatFailure(int track) {
     player.decreaseLives();
     chunkArray[track].fail();
-    playFail();
+    //playFail();
   }
   
 }
@@ -726,7 +726,7 @@ class MeatChunk{
         if (currentBeat != 0) {
           expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
           diff = master.currentTime - expectedMusicTime;
-          println("diff = " + diff);
+          //println("diff = " + diff);
         }
         currentError = abs(millis() - shouldBounceAgain);
         doBounce(diff);
@@ -820,22 +820,15 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + 2000*SPB;    // start bouncing in ghost mode after two beats
+    shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
     timeReturnFromFail = failTime + 4000*SPB;   // become active again after four beats
-    updateCurrentBeat();
+    expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
     updateCurrentBeat();
     //state = IN_HELL;
     yPosition = HEIGHT + MEAT_HEIGHT/2;
-    velocity = (GROUND + 1.5*MEAT_HEIGHT)/-8.5f;
+    velocity = (GROUND + MEAT_HEIGHT)/-8.5f;
     gravity = 0;
-    //returnFromHell();
-  }
-  
-  void returnFromHell() {
-    /*if ((millis() - failTime) >= TIME_IN_HELL) {
-      yPosition = yPosition + velocity;
-      println("returning" + yPosition);
-    }*/
+    //playFail();
   }
   
   void updateCurrentBeat() {
@@ -871,12 +864,12 @@ void setupScore(){
 
 void drawScore(){
   //draw background grill
-  image(grillImg, WIDTH/5, HEIGHT/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
+  image(grillImg, width/5, height/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
   for(int i = 0; i < digits.size(); i++){
     int digit = digits.get(i);
     PImage digitImg = numbersImg[digit];
     int offset = 1.58;
-    image(digitImg, WIDTH/offset - (i * MEATX), HEIGHT/2, MEATX, MEATY);
+    image(digitImg, width/offset - (i * MEATX), height/2, MEATX, MEATY);
   }  
 }
 /**
@@ -1000,7 +993,7 @@ void drawTree(Tree t, int i, float angle, color[] c){
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;
   // Convert it to radians
-  int gap = WIDTH/(length+1);
+  int gap = width/(length+1);
   translate(gap, 0);
   float theta = radians(a);
   // Start the recursive branching!
@@ -1103,36 +1096,38 @@ class Player{
    void drawScore(){
      pushMatrix();
      fill(255);
-     text(score, WIDTH-50, HEIGHT/15);  //number of lives
+     text(score, width-50, height/15);  //number of lives
      popMatrix();
    }
    
    void drawLives(){
      pushMatrix();
      fill(255);
-     image(meatLife, WIDTH/10, HEIGHT/120, 38, 38);  //meatball
-     text("x", WIDTH/12, HEIGHT/15); //x text
-     text(lives, WIDTH/25, HEIGHT/15);  //number of lives
+     image(meatLife, width/10, height/120, 38, 38);  //meatball
+     text("x", width/12, height/15); //x text
+     text(lives, width/25, height/15);  //number of lives
      popMatrix();
    }
 }
 class TitleState extends BaseState{
   int startTime;
   PImage logo = loadImage("sprite sheets/logo.png");
-  PImage play = loadImage("sprite sheets/play.png");
+  String[] quotes = {"When Meat Attacks", "Meat me at the Meat shop","The Meatshop Chronicles","Meat and Destroy","Meat and Prejudice","The Meat Files","Meatocracy","To Meat or not to Meat","Baconbacond and bacon","Meat Zone 2","Mega Meat","Meating of the Meats","Meatups","Meat Raider","That's a Meat","Beauty and the Meat","The pen is not Beatlier than the Meat","M for Meatdetta", "I came here to Beat Meat and chew bubble gum. I'm out of gum..."};
+  int quote;
+  String word;
   void setup(){
-    background(255, 0, 0);
-//    text("MeatBeat: The Test Title Screen", width/2, height/2);
+    background(200, 0, 0);
     playIntro();
+    quote = int(random(quotes.length-1));
+    fill(255);
+    text(quotes[quote], width/2, height*7/8);
   }
  
   void draw(){
         fill(100);
         rect(width/2, height/2.5, width/1.5, width/1.8, 20);
-        rect(width/2.05, height*0.865, width/5.4, height/6, 5);
         image(logo, width/8, -width/16, width*3/4, width*3/4);
-        image(play, width/2.7, height*3/4, width/4, height/4);
-  }
+}
  
   void keyPressed(){
       if(key=='p') stopIntro();

@@ -1,20 +1,22 @@
 class TitleState extends BaseState{
   int startTime;
   PImage logo = loadImage("sprite sheets/logo.png");
-  PImage play = loadImage("sprite sheets/play.png");
+  String[] quotes = {"When Meat Attacks", "Meat me at the Meat shop","The Meatshop Chronicles","Meat and Destroy","Meat and Prejudice","The Meat Files","Meatocracy","To Meat or not to Meat","Baconbacond and bacon","Meat Zone 2","Mega Meat","Meating of the Meats","Meatups","Meat Raider","That's a Meat","Beauty and the Meat","The pen is not Beatlier than the Meat","M for Meatdetta", "I came here to Beat Meat and chew bubble gum. I'm out of gum..."};
+  int quote;
+  String word;
   void setup(){
-    background(255, 0, 0);
-//    text("MeatBeat: The Test Title Screen", width/2, height/2);
+    background(200, 0, 0);
     playIntro();
+    quote = int(random(quotes.length-1));
+    fill(255);
+    text(quotes[quote], width/2, height*7/8);
   }
  
   void draw(){
         fill(100);
         rect(width/2, height/2.5, width/1.5, width/1.8, 20);
-        rect(width/2.05, height*0.865, width/5.4, height/6, 5);
         image(logo, width/8, -width/16, width*3/4, width*3/4);
-        image(play, width/2.7, height*3/4, width/4, height/4);
-  }
+}
  
   void keyPressed(){
       if(key=='p') stopIntro();
