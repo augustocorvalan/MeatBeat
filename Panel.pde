@@ -5,7 +5,9 @@ class Panel{
   float xPosition, yPosition, origY;
   boolean offScreen;
   int lastDraw;
-  int waitTime = 100; // ms between allowable presses
+  int waitTime = 140; // ms fist on screen;
+  int hold = 50; // ms between presses
+  
   
   Panel(float xPosition, float yPosition){
     this.xPosition = xPosition;
@@ -20,9 +22,11 @@ class Panel{
   }
   
   void drawIt() {
-    offScreen = false;
-    image(fist,xPosition,yPosition,PANEL_WIDTH,PANEL_HEIGHT);
-    lastDraw = millis();
+    if (millis() - lastDraw >- hold) {
+      offScreen = false;
+      image(fist,xPosition,yPosition,PANEL_WIDTH,PANEL_HEIGHT);
+      lastDraw = millis();
+    }
   }
   
   void draw(){

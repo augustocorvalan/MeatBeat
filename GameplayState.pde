@@ -4,7 +4,7 @@ class GameplayState extends BaseState{
   **/
   int totalHills = width * 0.00375;
   Hill[] hills = new Hill[totalHills];
-  int totalTrees = width * 0.00375;
+  int totalTrees = 3;
   Tree[] trees = new Tree[totalTrees];
   int totalClouds = 3;
   Cloud[] clouds = new Cloud[totalClouds];
@@ -19,7 +19,7 @@ class GameplayState extends BaseState{
   Panel[] panelArray;
   MeatChunk[] chunkArray;
   int offset = 60;
-  float thresholdMS = 1000;
+  float thresholdMS = 550;
   int timingErrorControl = 10;
   int[] shouldCheckBeat;
   Baseline bl;
@@ -133,7 +133,7 @@ class GameplayState extends BaseState{
   }
   
   boolean checkBeatSuccess(int track) {
-    int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].shouldBounceAgain);
+    int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].previousBounceTime);
     println(diff);
     //if (!panelArray[track].offScreen) {
     //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {

@@ -30,6 +30,7 @@ class MeatChunk{
   int expectedMusicTime;
   PImage drawImg;
   int lastBlueSwitch;
+  int previousBounceTime;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -152,6 +153,7 @@ class MeatChunk{
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
     lastBounce = millis();
+    previousBounceTime = shouldBounceAgain;
     shouldBounceAgain = lastBounce + bounceWait;// - timeError*2;
   }
   
