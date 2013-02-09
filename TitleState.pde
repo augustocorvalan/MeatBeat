@@ -23,7 +23,7 @@ class TitleState extends BaseState{
       else if(key=='o') playMaster();
       else if(key=='y') playIntro();
       else
-      setState(GAMEPLAY_STATE);
+        setState(GAMEPLAY_STATE);
   }
 
   void cleanup(){
