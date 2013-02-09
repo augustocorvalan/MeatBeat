@@ -8,6 +8,7 @@ class GameplayState extends BaseState{
   Tree[] trees = new Tree[totalTrees];
   int totalClouds = 3;
   Cloud[] clouds = new Cloud[totalClouds];
+  boolean showLineOrCloud;
 
   int[] soundTimes;
 
@@ -31,7 +32,8 @@ class GameplayState extends BaseState{
     setupHills(hills);  //hill setup
     trees = setupTrees(totalTrees);  //tree setup
     setupClouds(clouds);  //cloud setup
-
+    setupLine();
+ 
     /** LIVES **/
     player = new Player(INITIAL_LIVES,0);  //new player instance
     
@@ -62,7 +64,13 @@ class GameplayState extends BaseState{
       /** 
         BACKGROUND DRAW
       **/
-      drawClouds(clouds);
+      drawLine();
+      if(showLineOrCloud == "true"){
+        drawLine();
+       }
+       else{
+        drawClouds(clouds);
+       }
       drawHills(hills);
       drawTrees(trees);
 
