@@ -119,6 +119,7 @@ class GameplayState extends BaseState{
     if(key=='w') playSound(failsound);
     //if(key=='p') noLoop();
     if(key=='x') setState(FINISH_STATE);
+    if(key=='c') player.changeScore(10);
   }
     
   void cleanup(){
