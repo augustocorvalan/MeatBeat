@@ -1,17 +1,24 @@
 PImage meatFont; //used to display the score
 
-//Stack s;
+ArrayList digits = new ArrayList();
 
-void displayScore(){
+void setupScore(){
   int score = player.getScore();
   if(score == 0){
-  
+    digits.add(0);
   } else{
     while(score > 0) {
-     digit = score%10;
-     println("score is " + digit);
-//     s.push(digit);
-     score -= digit;
+      digit = floor(score % 10);
+      digits.add(digit);
+      score = floor(score / 10);
     }
   } 
+}
+
+void drawScore(){
+  for(int i = 0; i < digits.size(); i++){
+    int digit = digits.get(i);
+    PImage digitImg = numbersImg[digit];
+    image(digitImg, WIDTH/2, HEIGHT/2);
+  }  
 }
