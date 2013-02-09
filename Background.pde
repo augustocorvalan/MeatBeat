@@ -99,12 +99,13 @@ void setupClouds(Cloud[] clouds){
 }
 
 Cloud setupCloud(){
+  int x = -200 - floor(random(50,100));
   float yOffset = random(0.6, 1);
   int y = HEIGHT - HEIGHT * yOffset;
   float rateOffset = random(300, 800);
   int baseRate = BPM;
   int rt = baseRate/rateOffset;
-  Cloud cloud = new Cloud(-200, y, 1);
+  Cloud cloud = new Cloud(x, y, 1);
   cloud.setRate(rt);
   return cloud;
 }
