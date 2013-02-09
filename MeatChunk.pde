@@ -25,6 +25,7 @@ class MeatChunk{
   int lastUpdate;
   int framingError;
   int currentError;
+  int[] bounceTimes;
   boolean correctError;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
@@ -33,10 +34,9 @@ class MeatChunk{
     this.gravity = g;
     this.velocity = vy;
     this.track = t;
-    //track.getBeats()[0] = track.getBeats()[0] + SPB;
     this.lastBounce = millis();
     this.bounceWait = 0;
-    this.currentBeat = -1;
+    this.currentBeat = 0;
     this.shouldBounceAgain = 0;
     makeInActive();
     this.timeReturnFromFail = millis() + 128000*SPB;
@@ -45,6 +45,12 @@ class MeatChunk{
     lastUpdate = millis();
     framingError = 0;
     correctError = true;
+    /*bounceTimes = new int[track.getBeats().length];
+    bounceTimes[0] = lastUpdate + track.getBeat(0)*1000;
+    for (int i=1; i<bounceTimes.length; i++) {
+      bounceTimes[i] = bounceTimes[i-1] + track.getBeat(i)*1000;
+      println(bounceTimes[i]);
+    }*/
   }
   
   void increment(){
@@ -56,10 +62,11 @@ class MeatChunk{
     if (state != COMPLETE) {
       draw();
       if((currentError = millis() - shouldBounceAgain) >= 0) { // ball should be bouncing
-        framingError += currentError;
+      //if(millis() >= bounceTimes[currentBeat]) {
+        //framingError += currentError;
         println(currentError);
-        updateCurrentBeat();
         doBounce(currentError);
+        updateCurrentBeat();
         if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
           makeActive();
           return 0;  // NOT IN PLAY YET. give player a bounce to recover.
@@ -109,7 +116,7 @@ class MeatChunk{
   
   void doBounce(int timeError) {
     if (timeError > 500) timeError = 0;
-    correctError = !correctError;
+    //correctError = !correctError;
     float period = track.getBeat(currentBeat);
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / SPB);
     bounce(period, ht);
@@ -117,7 +124,7 @@ class MeatChunk{
     bounceWait = (int)(1000*period); // period in ms
     lastBounce = millis();
     if (correctError) {
-      shouldBounceAgain = lastBounce + bounceWait - timeError*2;
+      shouldBounceAgain = lastBounce + bounceWait - timeError;
     }
     else {
       shouldBounceAgain = lastBounce + bounceWait;
