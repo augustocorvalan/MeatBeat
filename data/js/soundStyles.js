@@ -20,6 +20,12 @@ function stopMaster() {
   master.pause();
 }
 
+function setMaster(time) {
+  master.pause();
+  master.currentTime = time;
+  master.play();
+}
+
 function playFail() {
   fail.play();
   fail = new Audio("sounds/soundeffects/meatbeatfailnoise.ogg");
