@@ -5,6 +5,7 @@ static final int TIME_IN_HELL = 500;
 static final int BOUNCING = 1;
 static final int IN_HELL = 2;
 static final int RISING = 3;
+static final int COMPLETE = 4;
 
 class MeatChunk{
   int xPosition, yPosition;
@@ -45,22 +46,24 @@ class MeatChunk{
   }
   
   int move() {
-    draw();
-    if(millis() > shouldBounceAgain) { // ball should be bouncing
-      updateCurrentBeat();
-      doBounce();
-      if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
-        makeActive();
-        return 0;  // NOT IN PLAY YET. give player a bounce to recover.
+    if (state != COMPLETE) {
+      draw();
+      if(millis() > shouldBounceAgain) { // ball should be bouncing
+        updateCurrentBeat();
+        doBounce();
+        if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
+          makeActive();
+          return 0;  // NOT IN PLAY YET. give player a bounce to recover.
+        }
+        if(active)
+          return 1;  // RETURN 1 IF GAMEPLAY STATE SHOULD CHECK IF BEAT WAS HIT
+        else
+          return 0;
       }
-      if(active)
-        return 1;  // RETURN 1 IF GAMEPLAY STATE SHOULD CHECK IF BEAT WAS HIT
-      else
-        return 0;
-    }
-    else {
-      doUpdate();
-      return 0; // RETURN 0 IF GAMEPLAY STATE SHOULD NOT CHECK IF BEAT WAS HIT
+      else {
+        doUpdate();
+        return 0; // RETURN 0 IF GAMEPLAY STATE SHOULD NOT CHECK IF BEAT WAS HIT
+      }
     }
   }
   
@@ -141,7 +144,12 @@ class MeatChunk{
   }
   
   void updateCurrentBeat() {
-    currentBeat = (currentBeat + 1) % track.getBeats().length;
+    if ((currentBeat+1)==track.getBeats().length) {
+      state = COMPLETE;
+    }
+    else {
+      currentBeat++;
+    }
   }
   
 }

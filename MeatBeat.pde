@@ -6,7 +6,8 @@ font=chubhand.ttf;
 static final int FIRST_STATE = 0;
 static final int GAMEPLAY_STATE = 1;
 static final int FINISH_STATE = 2;
-static final int STATE_COUNT = 3;
+static final int BETWEEN_LEVELS_STATE = 3;
+static final int STATE_COUNT = 4;
 
 static final int INITIAL_LIVES = 10;
 
@@ -75,6 +76,8 @@ BaseState createState(int state){
       return new GameplayState();
     case FINISH_STATE:
       return new FinishState();
+    case BETWEEN_LEVELS_STATE:
+      return new BetweenLevelsState();
     default:
       return null;
   } 
