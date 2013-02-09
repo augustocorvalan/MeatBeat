@@ -68,7 +68,7 @@ Tree[] setupTrees(int treeTotal){
   return trees;
 }
 
-void drawTrees(Tree[] trees){
+void drawTrees(Tree[] trees, color[] c){
   pushMatrix();
   translate(0, HEIGHT-50);
   counter++;
@@ -78,7 +78,7 @@ void drawTrees(Tree[] trees){
   for(int i = 0; i < length; i++){
    Tree t = trees[i];
    float angle = t.getAngle();
-   drawTree(t, i, angle);
+   drawTree(t, i, angle, c);
    //Update the tree angle
    float buffer = (BPM/60) / frameRate / 8  * 2 * PI; //slow down bpm by this much
    angle += buffer;
@@ -90,7 +90,7 @@ void drawTrees(Tree[] trees){
 }
 
 //@param height of tree
-void drawTree(Tree t, int i, float angle){
+void drawTree(Tree t, int i, float angle, color[] c){
   int x = t.getX();
   int y = t.getY();
   int height = t.getHeight();
@@ -98,23 +98,23 @@ void drawTree(Tree t, int i, float angle){
   int str = t.getStroke();
 //  int stroke = t.getStroke();
   //TODO: NOT DRY, FIX LATER
-  float red, green, blue;
-  if(colorConstant.equals("red")){
-    red = treeRed;
-    green = treeGreen*sin(angle);
-    blue = treeBlue*sin(angle);
-  } else if(colorConstant.equals("green")){
-    red = treeRed*sin(angle);
-    green = treeGreen;
-    blue = treeBlue*sin(angle);
-  } else{
-    red = treeRed*sin(angle);
-    green = treeGreen*sin(angle);
-    blue = treeBlue;
-  }
+//  float red, green, blue;
+//  if(colorConstant.equals("red")){
+//    red = treeRed;
+//    green = treeGreen*sin(angle);
+//    blue = treeBlue*sin(angle);
+//  } else if(colorConstant.equals("green")){
+//    red = treeRed*sin(angle);
+//    green = treeGreen;
+//    blue = treeBlue*sin(angle);
+//  } else{
+//    red = treeRed*sin(angle);
+//    green = treeGreen*sin(angle);
+//    blue = treeBlue;
+//  }
 //  float alpha = 200 - frameCount * 0.1;
   if(alpha <= 0) return;  //if tree opacity is invisible, don't draw
-  stroke(red, green, blue, opacity);
+  stroke(c[2]);
   strokeWeight(str);
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;

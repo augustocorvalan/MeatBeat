@@ -139,12 +139,12 @@ void setupHills(Hill[] hills){
   }
 }
 
-void drawHills(Hill[] hills){
+void drawHills(Hill[] hills, color[] c){
   pushMatrix();
   //Style stuff
-  fill(color(102, 153, 102));  //temp color for now
+  fill(c[0]);  //temp color for now
   strokeWeight(4);
-  stroke(200 - frameCount * 0.01);
+  stroke(c[2]);
   for(int i = 0; i < hills.length; i++){
     hills[i].draw();
   }
@@ -206,7 +206,10 @@ Cloud setupCloud(){
   return cloud;
 }
 
-void drawClouds(Cloud[] clouds){
+void drawClouds(Cloud[] clouds, color[] c){
+  colorMode(HSB, 360);
+  fill(c[2]);
+  stroke(c[2]);
   for(int i = 0; i < clouds.length; i++){
     Cloud cloud = clouds[i];
     cloudHeight = cloud.getHeight();
@@ -216,6 +219,7 @@ void drawClouds(Cloud[] clouds){
       clouds[i] = setupCloud();
     }
   }
+  colorMode(RGB);
 }
 /*********
 LINES
@@ -366,11 +370,13 @@ class ColorWheel{
    color[] getColor(){
      colorMode(HSB,360);
      color[] colorArray = new color[3];
-     colorArray[0] = color(offset, intensity, 360);
-     colorArray[1] = color(offset + 120, intensity, 360);
-     colorArray[2] = color(offset + 240, intensity, 360);
+     colorArray[0] = color((offset%360), intensity, 100);
+     colorArray[1] = color(((offset + 120)%360), intensity, 100);
+     colorArray[2] = color(((offset + 240)%360), intensity, 70);
      offset++;
+     intensity++;
      colorMode(RGB);
+     return colorArray;
    }
 }
 color[] colors = {
@@ -414,10 +420,10 @@ class GameplayState extends BaseState{
   int totalClouds = 3;
   Cloud[] clouds = new Cloud[totalClouds];
   boolean showLineOrCloud;
+  ColorWheel cw;
+  color[] c;
   int levelStart;
   static final int NEW_LEVEL_TIME = 1500;
-
-
   
   Level currentLevel;
   int currentTrackNum;
@@ -429,11 +435,15 @@ class GameplayState extends BaseState{
   int[] shouldCheckBeat;
   Baseline bl;
   
+  int colorShifter;
+  
   void setup(){    
     /**  BACKGROUND SETUP **/
     setupHills(hills);  //hill setup
     trees = setupTrees(totalTrees);  //tree setup
     setupClouds(clouds);  //cloud setup
+    cw = new ColorWheel(42f,50f);
+    colorShifter=1;
     setupLine();
     setNextLevel();
     playMaster();
@@ -461,7 +471,12 @@ class GameplayState extends BaseState{
  
   void draw(){
       levelComplete = true;
-      background(143);
+      colorShifter--;
+      if(colorShifter == 0) {
+        c = cw.getColor();
+        colorShifter=5;
+      }
+      background(c[1]);
       
       /** 
         BACKGROUND DRAW
@@ -471,10 +486,10 @@ class GameplayState extends BaseState{
         drawLine();
        }
        else{
-        drawClouds(clouds);
+        drawClouds(clouds,c);
        }
-      drawHills(hills);
-      drawTrees(trees);
+      drawHills(hills,c);
+      drawTrees(trees,c);
 
       /** LIVES **/
       player.drawLives();
@@ -886,7 +901,7 @@ Tree[] setupTrees(int treeTotal){
   return trees;
 }
 
-void drawTrees(Tree[] trees){
+void drawTrees(Tree[] trees, color[] c){
   pushMatrix();
   translate(0, HEIGHT-50);
   counter++;
@@ -896,7 +911,7 @@ void drawTrees(Tree[] trees){
   for(int i = 0; i < length; i++){
    Tree t = trees[i];
    float angle = t.getAngle();
-   drawTree(t, i, angle);
+   drawTree(t, i, angle, c);
    //Update the tree angle
    float buffer = (BPM/60) / frameRate / 8  * 2 * PI; //slow down bpm by this much
    angle += buffer;
@@ -908,7 +923,7 @@ void drawTrees(Tree[] trees){
 }
 
 //@param height of tree
-void drawTree(Tree t, int i, float angle){
+void drawTree(Tree t, int i, float angle, color[] c){
   int x = t.getX();
   int y = t.getY();
   int height = t.getHeight();
@@ -916,23 +931,23 @@ void drawTree(Tree t, int i, float angle){
   int str = t.getStroke();
 //  int stroke = t.getStroke();
   //TODO: NOT DRY, FIX LATER
-  float red, green, blue;
-  if(colorConstant.equals("red")){
-    red = treeRed;
-    green = treeGreen*sin(angle);
-    blue = treeBlue*sin(angle);
-  } else if(colorConstant.equals("green")){
-    red = treeRed*sin(angle);
-    green = treeGreen;
-    blue = treeBlue*sin(angle);
-  } else{
-    red = treeRed*sin(angle);
-    green = treeGreen*sin(angle);
-    blue = treeBlue;
-  }
+//  float red, green, blue;
+//  if(colorConstant.equals("red")){
+//    red = treeRed;
+//    green = treeGreen*sin(angle);
+//    blue = treeBlue*sin(angle);
+//  } else if(colorConstant.equals("green")){
+//    red = treeRed*sin(angle);
+//    green = treeGreen;
+//    blue = treeBlue*sin(angle);
+//  } else{
+//    red = treeRed*sin(angle);
+//    green = treeGreen*sin(angle);
+//    blue = treeBlue;
+//  }
 //  float alpha = 200 - frameCount * 0.1;
   if(alpha <= 0) return;  //if tree opacity is invisible, don't draw
-  stroke(red, green, blue, opacity);
+  stroke(c[2]);
   strokeWeight(str);
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;

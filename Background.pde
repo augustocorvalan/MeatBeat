@@ -43,12 +43,12 @@ void setupHills(Hill[] hills){
   }
 }
 
-void drawHills(Hill[] hills){
+void drawHills(Hill[] hills, color[] c){
   pushMatrix();
   //Style stuff
-  fill(color(102, 153, 102));  //temp color for now
+  fill(c[0]);  //temp color for now
   strokeWeight(4);
-  stroke(200 - frameCount * 0.01);
+  stroke(c[2]);
   for(int i = 0; i < hills.length; i++){
     hills[i].draw();
   }
@@ -110,7 +110,10 @@ Cloud setupCloud(){
   return cloud;
 }
 
-void drawClouds(Cloud[] clouds){
+void drawClouds(Cloud[] clouds, color[] c){
+  colorMode(HSB, 360);
+  fill(c[2]);
+  stroke(c[2]);
   for(int i = 0; i < clouds.length; i++){
     Cloud cloud = clouds[i];
     cloudHeight = cloud.getHeight();
@@ -120,6 +123,7 @@ void drawClouds(Cloud[] clouds){
       clouds[i] = setupCloud();
     }
   }
+  colorMode(RGB);
 }
 /*********
 LINES

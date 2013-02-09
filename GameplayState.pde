@@ -9,10 +9,10 @@ class GameplayState extends BaseState{
   int totalClouds = 3;
   Cloud[] clouds = new Cloud[totalClouds];
   boolean showLineOrCloud;
+  ColorWheel cw;
+  color[] c;
   int levelStart;
   static final int NEW_LEVEL_TIME = 1500;
-
-
   
   Level currentLevel;
   int currentTrackNum;
@@ -24,11 +24,15 @@ class GameplayState extends BaseState{
   int[] shouldCheckBeat;
   Baseline bl;
   
+  int colorShifter;
+  
   void setup(){    
     /**  BACKGROUND SETUP **/
     setupHills(hills);  //hill setup
     trees = setupTrees(totalTrees);  //tree setup
     setupClouds(clouds);  //cloud setup
+    cw = new ColorWheel(42f,50f);
+    colorShifter=1;
     setupLine();
     setNextLevel();
     playMaster();
@@ -56,7 +60,12 @@ class GameplayState extends BaseState{
  
   void draw(){
       levelComplete = true;
-      background(143);
+      colorShifter--;
+      if(colorShifter == 0) {
+        c = cw.getColor();
+        colorShifter=5;
+      }
+      background(c[1]);
       
       /** 
         BACKGROUND DRAW
@@ -66,10 +75,10 @@ class GameplayState extends BaseState{
         drawLine();
        }
        else{
-        drawClouds(clouds);
+        drawClouds(clouds,c);
        }
-      drawHills(hills);
-      drawTrees(trees);
+      drawHills(hills,c);
+      drawTrees(trees,c);
 
       /** LIVES **/
       player.drawLives();
