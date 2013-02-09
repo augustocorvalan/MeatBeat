@@ -22,6 +22,8 @@ void setupScore(){
 void drawScore(){
   //draw background grill
   image(grillImg, width/2 - GRILLDIMENSIONS/2, height/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
+  //draw replay image
+  image(replayImg, width/13, height/4, 150, 150);
   for(int i = 0; i < digits.size(); i++){
     int digit = digits.get(i);
     PImage digitImg = numbersImg[digit];
