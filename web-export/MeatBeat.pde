@@ -442,7 +442,7 @@ class GameplayState extends BaseState{
   Panel[] panelArray;
   MeatChunk[] chunkArray;
   int offset = 60;
-  float thresholdMS = 650;
+  float thresholdMS = 550;
   int timingErrorControl = 10;
   int[] shouldCheckBeat;
   Baseline bl;
@@ -523,7 +523,7 @@ class GameplayState extends BaseState{
           //playSound(currentLevel.getTrack(0).getSound());
           //soundTimes[0] = millis();
       }*/
-      if (levelComplete && millis() > lvlTimes[levelIndex]) {
+      if (levelComplete) {
         //setState(BETWEEN_LEVELS_STATE);
         //setState(GAMEPLAY_STATE);
         setNextLevel();
@@ -535,13 +535,10 @@ class GameplayState extends BaseState{
   
  
   void keyPressed(){
-    //setState(FINISH_STATE);
-    //player.decreaseLives();
     for (int i = 0; i < currentLevel.getNumTracks(); i++) {
       if (key==currentLevel.getTrack(i).getKey()) {
         if (panelArray[i].offScreen) {
           panelArray[i].drawIt();
-          //checkBeatSuccess(i);
         }
       }
     }
@@ -559,10 +556,11 @@ class GameplayState extends BaseState{
   }
   
   boolean checkBeatSuccess(int track) {
-    //int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].shouldBounceAgain);
-    //println(diff);
-    if (!panelArray[track].offScreen) {
+    int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].previousBounceTime);
+    println(diff);
+    //if (!panelArray[track].offScreen) {
     //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {
+    if( abs(diff) <= thresholdMS) {
       beatSuccess(track);
     }
     else {
@@ -676,6 +674,7 @@ class MeatChunk{
   int expectedMusicTime;
   PImage drawImg;
   int lastBlueSwitch;
+  int previousBounceTime;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -753,7 +752,6 @@ class MeatChunk{
   
   void makeInActive() {
     active = false;
-    opacity = 50;
     drawImg = deadMeatImg1;
   }
   
@@ -799,6 +797,7 @@ class MeatChunk{
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
     lastBounce = millis();
+    previousBounceTime = shouldBounceAgain;
     shouldBounceAgain = lastBounce + bounceWait;// - timeError*2;
   }
   
@@ -819,14 +818,14 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
+    //shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
     timeReturnFromFail = failTime + 4000*SPB;   // become active again after four beats
-    expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
-    updateCurrentBeat();
+    //expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
+    //updateCurrentBeat();
     //state = IN_HELL;
-    yPosition = HEIGHT + MEAT_HEIGHT;
-    velocity = -1/1000f;
-    gravity = 0;
+    //yPosition = HEIGHT + MEAT_HEIGHT;
+    //velocity = 0;
+    //gravity = 0;
     //playFail();
   }
   
@@ -863,12 +862,11 @@ void setupScore(){
 
 void drawScore(){
   //draw background grill
-  image(grillImg, width/5, height/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
+  image(grillImg, width/2 - GRILLDIMENSIONS/2, height/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
   for(int i = 0; i < digits.size(); i++){
     int digit = digits.get(i);
     PImage digitImg = numbersImg[digit];
-    int offset = 1.58;
-    image(digitImg, width/offset - (i * MEATX), height/2, MEATX, MEATY);
+    image(digitImg, width/2 - MEATX/2*i - i*50, 2 * height/5 + MEATY/2, MEATX, MEATY);
   }  
 }
 /**
@@ -1033,7 +1031,9 @@ class Panel{
   float xPosition, yPosition, origY;
   boolean offScreen;
   int lastDraw;
-  int waitTime = 200; // ms between allowable presses
+  int waitTime = 140; // ms fist on screen;
+  int hold = 50; // ms between presses
+  
   
   Panel(float xPosition, float yPosition){
     this.xPosition = xPosition;
@@ -1048,9 +1048,11 @@ class Panel{
   }
   
   void drawIt() {
-    offScreen = false;
-    image(fist,xPosition,yPosition,PANEL_WIDTH,PANEL_HEIGHT);
-    lastDraw = millis();
+    if (millis() - lastDraw >- hold) {
+      offScreen = false;
+      image(fist,xPosition,yPosition,PANEL_WIDTH,PANEL_HEIGHT);
+      lastDraw = millis();
+    }
   }
   
   void draw(){
@@ -1073,7 +1075,7 @@ class Player{
    
    void decreaseLives(){
      lives--;
-     if(lives<=0) setState(FINISH_STATE);; // should have endGame();
+     if(lives<=0) setState(FINISH_STATE); // should have endGame();
    }
    
    int getLives(){
@@ -1129,7 +1131,7 @@ class TitleState extends BaseState{
       else if(key=='o') playMaster();
       else if(key=='y') playIntro();
       else
-      setState(GAMEPLAY_STATE);
+        setState(GAMEPLAY_STATE);
   }
 
   void cleanup(){
