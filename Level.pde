@@ -1,5 +1,4 @@
-String[] levelNames = {"sounds/testmidi/samplemeatbeatbeat.mid",
-                       "sounds/testmidi/TwoTrackBasicBeat.mid"};
+String[] levelNames = {"music/LEVEL01.mid","music/LEVEL02.mid","music/LEVEL03.mid","music/LEVEL04.mid","music/LEVEL05.mid","music/LEVEL06.mid","music/LEVEL07.mid"};
                        
 String[][] soundNames = { {"music/meatbeatkick.ogg","music/meatbeatkick.ogg","music/meatbeatkick.ogg"},
                           {"music/meatbeatkick.ogg","music/meatbeatkick.ogg"}};

@@ -32,9 +32,9 @@ class MeatChunk{
     this.lastBounce = millis();
     this.bounceWait = t.getBeat(0)*1000;
     this.currentBeat = -1;
-    this.shouldBounceAgain = 0;
+    this.shouldBounceAgain = millis() + spb*1000;
     makeInActive();
-    this.timeReturnFromFail = millis() + 4000*spb;
+    this.timeReturnFromFail = millis() + 64000*spb;
     this.failTime = 0;
     state = BOUNCING;
   }
