@@ -46,7 +46,7 @@ void setupHills(Hill[] hills){
 void drawHills(Hill[] hills){
   pushMatrix();
   //Style stuff
-  fill(color(102, 153, 102, 200 - frameCount *0.01));  //temp color for now
+  fill(color(102, 153, 102));  //temp color for now
   strokeWeight(4);
   stroke(200 - frameCount * 0.01);
   for(int i = 0; i < hills.length; i++){
@@ -59,24 +59,49 @@ void drawHills(Hill[] hills){
 CLOUDS
 *********/
 class Cloud{
-  int x, y, scale;
+  int x, y, scale, rate;
   Cloud(int x, int y, int scale){
     this.x = x;
     this.y = y;
     this.scale = scale;
   }
+  int setX(int x){
+    this.x = x;
+  }
+  void getX(){
+    return x;
+  }
+  int setY(int y){
+    this.y = y;
+  }
+  void getY(){
+    return y;
+  }
+  int getRate(){
+    return rate;
+  }
+  void setRate(int rate){
+    this.rate = rate;
+  }
 }
 
 void setupClouds(Cloud[] clouds){
   for(int i = 0; i < clouds.length; i++){
-    float yOffset = random(0.8, 1);
-    float y = HEIGHT - HEIGHT * yOffset;
+    float yOffset = random(0.6, 1);
+    int y = HEIGHT - HEIGHT * yOffset;
+    float rateOffset = random(400, 1000);
+    int baseRate = BPM;
+    int rt = baseRate/rateOffset;
+    clouds[i] = new Cloud(-100, y, 1);
+    clouds[i].setRate(rt);
   }
 }
 
 void drawClouds(Cloud[] clouds){
   for(int i = 0; i < clouds.length; i++){
-    
-//    shape(cloudImage, 250, );
+    Cloud cloud = clouds[i];
+    fill(255, 143, 150);
+    shape(cloudImage, cloud.getX(), cloud.getY());
+    cloud.setX(cloud.getRate() + cloud.getX());
   }
 }
