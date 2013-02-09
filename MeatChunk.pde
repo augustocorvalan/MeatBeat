@@ -39,7 +39,11 @@ class MeatChunk{
     this.currentBeat = -1;
     this.shouldBounceAgain = 0;
     makeInActive();
-    this.timeReturnFromFail = millis() + 128000*SPB;
+    if(INVINSIBLE){  //for debugging purposes only, take out later
+      this.timeReturnFromFail = millis() + 128000*SPB;
+    } else{
+      this.timeReturnFromFail = millis() + 4000*SPB;
+    } 
     this.failTime = 0;
     state = BOUNCING;
     lastUpdate = millis();
@@ -87,8 +91,15 @@ class MeatChunk{
   }
   
   void draw() {
-    fill(255, 51, 51, opacity);
-    ellipse(xPosition, yPosition, MEAT_WIDTH, MEAT_HEIGHT);
+//    fill(255, 51, 51, opacity);
+//    ellipse(xPosition, yPosition, MEAT_WIDTH, MEAT_HEIGHT);
+    PImage drawImg;
+    if(active){
+      drawImg = meatImg;
+    } else{
+      drawImg = deadMeatImg;
+    }
+    image(drawImg, xPosition, yPosition, MEAT_WIDTH, MEAT_HEIGHT);
   }
   
   void bounce(float period, float h) {
