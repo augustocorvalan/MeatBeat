@@ -12,7 +12,7 @@ static final int BPM = 110;
 static final float SPB = 0.5454545;
 boolean startMaster = false;
 
-static final int INITIAL_LIVES = 100;
+static final int INITIAL_LIVES = 20;
 
 static final int MAX_FRAME_RATE = 120;
 int fps = 0;  //how many frames drawn this second  
@@ -44,7 +44,7 @@ boolean INVINSIBLE = false;  //debugging purposes only
 void setup(){
   frameRate(MAX_FRAME_RATE);
   getBeats(levelNames[levelIndex]);
-  size(800, 600);
+  size(window.innerWidth, window.innerHeight); 
   background(255);
   currentState = FIRST_STATE;
   states = new BaseState[STATE_COUNT];
