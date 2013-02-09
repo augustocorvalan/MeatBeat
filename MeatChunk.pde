@@ -128,14 +128,14 @@ class MeatChunk{
   void doBounce(int timeError) {
     if (timeError > 500) timeError = 0;
     //correctError = !correctError;
-    float period = track.getBeat(currentBeat);
+    float period = track.getBeat(currentBeat) - timeError/1000f;
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / SPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
     lastBounce = millis();
     if (correctError) {
-      shouldBounceAgain = lastBounce + bounceWait - timeError;
+      shouldBounceAgain = lastBounce + bounceWait;// - timeError;
     }
     else {
       shouldBounceAgain = lastBounce + bounceWait;

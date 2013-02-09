@@ -4,7 +4,7 @@ class Baseline {
   int numSpaces = 0;
   
   void addEmptyZone(int xPos) {
-    spaces[numSpaces] = xPos - PANEL_WIDTH/2;
+    spaces[numSpaces] = xPos - MEAT_WIDTH/2;
     numSpaces++;
   }
   
@@ -13,7 +13,7 @@ class Baseline {
     int x1 = 0;
     for(int i=0; i < numSpaces; i++) {
       line(x1,GROUND,spaces[i],GROUND);
-      x1 = spaces[i] + PANEL_WIDTH;
+      x1 = spaces[i] + MEAT_WIDTH;
     }
     line(x1,GROUND,WIDTH,GROUND);
   }

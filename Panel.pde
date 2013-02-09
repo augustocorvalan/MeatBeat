@@ -1,5 +1,5 @@
-static final int PANEL_WIDTH = 50;
-static final int PANEL_HEIGHT = 10;
+static final int PANEL_WIDTH = 30;
+static final int PANEL_HEIGHT = 90;
 
 class Panel{
   float xPosition, yPosition, origY;
@@ -23,16 +23,13 @@ class Panel{
   
   void drawIt() {
     offScreen = false;
-    fill(213, 143, 45, opacity);
-    rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT);
+    image(fist,xPosition,yPosition,PANEL_WIDTH,PANEL_HEIGHT);
     lastDraw = millis();
   }
   
   void draw(){
     if(!offScreen){
-      noStroke();        
-      fill(213, 143, 45, opacity);
-      rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT);
+      image(fist,xPosition,yPosition,PANEL_WIDTH,PANEL_HEIGHT);
       if( (millis() - lastDraw) > waitTime) {
         offScreen = true;
         //opacity = 255;

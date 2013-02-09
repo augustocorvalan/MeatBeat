@@ -1,7 +1,4 @@
 String[] levelNames = {"music/L1.mid","music/LEVEL02.mid","music/LEVEL03.mid","music/LEVEL04.mid","music/LEVEL05.mid","music/LEVEL06.mid","music/LEVEL07.mid"};
-                       
-String[][] soundNames = { {"music/meatbeatkick.ogg","music/meatbeatkick.ogg","music/meatbeatkick.ogg"},
-                          {"music/meatbeatkick.ogg","music/meatbeatkick.ogg"}};
 
 String failsound = "sounds/soundeffects/meatbeatfailnoise.ogg";
                    
@@ -32,12 +29,14 @@ class Level {
   int numTracks;
   Track[] tracks;
   
-  Level(float[][] beats,  String[] sounds) {
+  Level(float[][] beats) {
     numTracks = calcNumTracks(beats);
     tracks = new Track[numTracks+1];
+    println(levelIndex);
     for(int i=0; i < numTracks; i++) {
-      beats[i][0] = beats[i][0] - SPB/2;
-      tracks[i] = new Track(beats[i],sounds[i],keyVals[i]);
+      if(levelIndex==0)
+        beats[i][0] = beats[i][0] - SPB/2;
+      tracks[i] = new Track(beats[i],keyVals[i]);
     }
   }
   

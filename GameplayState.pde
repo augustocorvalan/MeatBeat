@@ -9,8 +9,9 @@ class GameplayState extends BaseState{
   int totalClouds = 3;
   Cloud[] clouds = new Cloud[totalClouds];
   boolean showLineOrCloud;
+  int levelStart;
+  static final int NEW_LEVEL_TIME = 1500;
 
-  int[] soundTimes;
 
   
   Level currentLevel;
@@ -23,47 +24,37 @@ class GameplayState extends BaseState{
   int[] shouldCheckBeat;
   Baseline bl;
   
-  void setup(){
-    background(0);
-    
-    /**
-      BACKGROUND SETUP
-    **/
+  void setup(){    
+    /**  BACKGROUND SETUP **/
     setupHills(hills);  //hill setup
     trees = setupTrees(totalTrees);  //tree setup
     setupClouds(clouds);  //cloud setup
     setupLine();
- 
-    /** LIVES **/
-    player = new Player(INITIAL_LIVES,0);  //new player instance
-    
-//    player = new Player(INITIAL_LIVES, meatLife);  //player instance
-//    player.setupLives();
-    currentLevel = new Level(beatsarray,soundNames[0]);
+    setNextLevel();
+    playMaster();
+  }
+  
+  void setNextLevel() {
+    fist = loadImage(fists[int(random(0,fists.length))]);
+    currentLevel = new Level(beatsarray);
     levelIndex++;
-    getBeats(levelNames[levelIndex]);
-    println(levelIndex);
+    getBeats(levelNames[levelIndex]); // get next level loaded
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
-    soundTimes = new int[currentTrackNum];
     shouldCheckBeat = new int[currentTrackNum];
     bl = new Baseline();
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
-      chunkArray[i] = new MeatChunk(xpos, GROUND, 0, 0, currentLevel.getTrack(i));
-      panelArray[i] = new Panel(xpos, GROUND+(PANEL_HEIGHT/2));
+      chunkArray[i] = new MeatChunk(xpos - MEAT_WIDTH/2, GROUND, 0, 0, currentLevel.getTrack(i));
+      panelArray[i] = new Panel(xpos - PANEL_WIDTH/2, GROUND - 15);
       bl.addEmptyZone(xpos);
-      soundTimes[i] = millis();
       shouldCheckBeat[i] = 0;
     }
+    levelStart = millis();
   }
  
   void draw(){
-      if (!startMaster) {
-        playMaster();
-        startMaster = true;
-      }
       levelComplete = true;
       background(143);
       
@@ -102,7 +93,11 @@ class GameplayState extends BaseState{
       }*/
       if (levelComplete) {
         //setState(BETWEEN_LEVELS_STATE);
-        setState(GAMEPLAY_STATE);
+        //setState(GAMEPLAY_STATE);
+        setNextLevel();
+      }
+      if ((millis() - levelStart) <= NEW_LEVEL_TIME) {
+        text("LEVEL " + levelIndex,WIDTH/2,HEIGHT/4);
       }
   }
   
@@ -110,7 +105,6 @@ class GameplayState extends BaseState{
   void keyPressed(){
     //setState(FINISH_STATE);
     //player.decreaseLives();
-    
     for (int i = 0; i < currentLevel.getNumTracks(); i++) {
       if (key==currentLevel.getTrack(i).getKey()) {
         if (panelArray[i].offScreen) {
@@ -120,6 +114,7 @@ class GameplayState extends BaseState{
       }
     }
     
+    if(key=='1') setNextLevel();
     if(key=='q') println(frameRate);
     if(key=='w') playSound(failsound);
     //if(key=='p') noLoop();
@@ -147,8 +142,6 @@ class GameplayState extends BaseState{
   }
   
   void beatFailure(int track) {
-    //playSound(failsound);
-    currentLevel.getTrack(track).canSound=false;
     player.decreaseLives();
     chunkArray[track].fail();
     playFail();
