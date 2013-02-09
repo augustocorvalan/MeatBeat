@@ -2,6 +2,10 @@ PImage meatFont; //used to display the score
 
 ArrayList digits = new ArrayList();
 
+int GRILLDIMENSIONS = 500;
+int MEATX = 124 * 0.75;
+int MEATY = 180 * 0.75;
+
 void setupScore(){
   int score = player.getScore();
   if(score == 0){
@@ -16,9 +20,12 @@ void setupScore(){
 }
 
 void drawScore(){
+  //draw background grill
+  image(grillImg, width/5, height/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
   for(int i = 0; i < digits.size(); i++){
     int digit = digits.get(i);
     PImage digitImg = numbersImg[digit];
-    image(digitImg, WIDTH/2, HEIGHT/2);
+    int offset = 1.58;
+    image(digitImg, width/offset - (i * MEATX), height/2, MEATX, MEATY);
   }  
 }

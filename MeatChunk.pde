@@ -22,11 +22,14 @@ class MeatChunk{
   int timeReturnFromFail;
   int failTime;
   int state;
-  int lastUpdate;
+  int lastMove;
   int framingError;
   int currentError;
   int[] bounceTimes;
   boolean correctError;
+  int expectedMusicTime;
+  PImage drawImg;
+  int lastBlueSwitch;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -39,13 +42,13 @@ class MeatChunk{
     this.currentBeat = 0;
     makeInActive();
     if(INVINSIBLE){  //for debugging purposes only, take out later
-      this.timeReturnFromFail = millis() + 128000*SPB;
+      this.timeReturnFromFail = millis() + 300000*SPB;
     } else{
       this.timeReturnFromFail = millis() + 4000*SPB;
     } 
     this.failTime = 0;
     state = BOUNCING;
-    lastUpdate = millis();
+    lastMove = millis();
     framingError = 0;
     correctError = true;
     /*bounceTimes = new int[track.getBeats().length];
@@ -55,6 +58,9 @@ class MeatChunk{
       println(bounceTimes[i]);
     }*/
     this.shouldBounceAgain = 0;
+    expectedMusicTime = master.currentTime;
+    lastBlueSwitch = 0;
+    drawImg = deadMeatImg1;
   }
   
   void increment(){
@@ -65,13 +71,19 @@ class MeatChunk{
   int move() {
     if (state != COMPLETE) {
       draw();
-
-      //if( currentError <= 5 || currentError >= 500 ) { // ball should be bouncing
+      lastMove = millis();
       //if(millis() >= bounceTimes[currentBeat]) {
-        if ((shouldBounceAgain - millis()) <= 9  || millis() >= shouldBounceAgain) {
+      if (millis() >= shouldBounceAgain) {
         //framingError += currentError;
+        float diff = 0;
+        setMaster(0);
+        if (currentBeat != 0) {
+          expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
+          diff = master.currentTime - expectedMusicTime;
+          //println("diff = " + diff);
+        }
         currentError = abs(millis() - shouldBounceAgain);
-        doBounce(currentError);
+        doBounce(diff);
         updateCurrentBeat();
         if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
           makeActive();
@@ -97,16 +109,20 @@ class MeatChunk{
   void makeInActive() {
     active = false;
     opacity = 50;
+    drawImg = deadMeatImg1;
   }
   
   void draw() {
-//    fill(255, 51, 51, opacity);
-//    ellipse(xPosition, yPosition, MEAT_WIDTH, MEAT_HEIGHT);
-    PImage drawImg;
     if(active){
       drawImg = meatImg;
-    } else{
-      drawImg = deadMeatImg;
+    }
+    else if(drawImg == deadMeatImg1 && (millis() - lastBlueSwitch) >= 250) {
+      drawImg = deadMeatImg2;
+      lastBlueSwitch = millis();
+    }
+    else if(drawImg == deadMeatImg2 && (millis() - lastBlueSwitch) >= 250){
+      drawImg = deadMeatImg1;
+      lastBlueSwitch = millis();
     }
     image(drawImg, xPosition, yPosition, MEAT_WIDTH, MEAT_HEIGHT);
   }
@@ -127,22 +143,18 @@ class MeatChunk{
     }
   }
   
-  void doBounce(int timeError) {
-    if (timeError > 500) timeError = 0;
+  void doBounce(float timeError) {
     //correctError = !correctError;
-    println(timeError/1000f);
-    float period = track.getBeat(currentBeat);
+    if (currentBeat==0 && levelIndex ==1)
+      float period = track.getBeat(currentBeat);
+    else
+      float period = track.getBeat(currentBeat) - timeError;
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / SPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
     lastBounce = millis();
-    if (correctError) {
-      shouldBounceAgain = lastBounce + bounceWait;// - timeError;
-    }
-    else {
-      shouldBounceAgain = lastBounce + bounceWait;
-    }
+    shouldBounceAgain = lastBounce + bounceWait;// - timeError*2;
   }
   
   void doUpdate() {
@@ -162,22 +174,15 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + 2000*SPB;    // start bouncing in ghost mode after two beats
+    shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
     timeReturnFromFail = failTime + 4000*SPB;   // become active again after four beats
-    updateCurrentBeat();
+    expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
     updateCurrentBeat();
     //state = IN_HELL;
     yPosition = HEIGHT + MEAT_HEIGHT/2;
-    velocity = (GROUND + 1.5*MEAT_HEIGHT)/-8.5f;
+    velocity = (GROUND + MEAT_HEIGHT)/-8.5f;
     gravity = 0;
-    //returnFromHell();
-  }
-  
-  void returnFromHell() {
-    /*if ((millis() - failTime) >= TIME_IN_HELL) {
-      yPosition = yPosition + velocity;
-      println("returning" + yPosition);
-    }*/
+    //playFail();
   }
   
   void updateCurrentBeat() {

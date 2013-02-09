@@ -2,17 +2,17 @@ class GameplayState extends BaseState{
   /** 
     BACKGROUND VARIABLES
   **/
-  int totalHills = 3;
+  int totalHills = width * 0.00375;
   Hill[] hills = new Hill[totalHills];
   int totalTrees = 3;
   Tree[] trees = new Tree[totalTrees];
   int totalClouds = 3;
   Cloud[] clouds = new Cloud[totalClouds];
   boolean showLineOrCloud;
+  ColorWheel cw;
+  color[] c;
   int levelStart;
   static final int NEW_LEVEL_TIME = 1500;
-
-
   
   Level currentLevel;
   int currentTrackNum;
@@ -24,11 +24,15 @@ class GameplayState extends BaseState{
   int[] shouldCheckBeat;
   Baseline bl;
   
+  int colorShifter;
+  
   void setup(){    
     /**  BACKGROUND SETUP **/
     setupHills(hills);  //hill setup
     trees = setupTrees(totalTrees);  //tree setup
     setupClouds(clouds);  //cloud setup
+    cw = new ColorWheel(42f,50f);
+    colorShifter=1;
     setupLine();
     setNextLevel();
     playMaster();
@@ -56,7 +60,12 @@ class GameplayState extends BaseState{
  
   void draw(){
       levelComplete = true;
-      background(143);
+      colorShifter--;
+      if(colorShifter == 0) {
+        c = cw.getColor();
+        colorShifter=5;
+      }
+      background(c[1]);
       
       /** 
         BACKGROUND DRAW
@@ -66,10 +75,10 @@ class GameplayState extends BaseState{
         drawLine();
        }
        else{
-        drawClouds(clouds);
+        drawClouds(clouds,c);
        }
-      drawHills(hills);
-      drawTrees(trees);
+      drawHills(hills,c);
+      drawTrees(trees,c);
 
       /** LIVES **/
       player.drawLives();
@@ -97,7 +106,7 @@ class GameplayState extends BaseState{
         setNextLevel();
       }
       if ((millis() - levelStart) <= NEW_LEVEL_TIME) {
-        image(lvlImages[levelIndex-1],WIDTH/2-100,HEIGHT/4,200,40);
+        image(lvlImages[levelIndex-1], width/2-100, height/4,200,40);
       }
   }
   
@@ -117,12 +126,13 @@ class GameplayState extends BaseState{
     if(key=='1') setNextLevel();
     if(key=='q') println(frameRate);
     if(key=='w') playSound(failsound);
-    //if(key=='p') noLoop();
+    if(key=='p') noLoop();
     if(key=='x') setState(FINISH_STATE);
+    if(key=='c') player.changeScore(10);
   }
     
   void cleanup(){
-   
+    stopMaster();
   }
   
   boolean checkBeatSuccess(int track) {
@@ -145,7 +155,7 @@ class GameplayState extends BaseState{
   void beatFailure(int track) {
     player.decreaseLives();
     chunkArray[track].fail();
-    playFail();
+    //playFail();
   }
   
 }

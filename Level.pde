@@ -1,6 +1,8 @@
 String[] levelNames = {"music/L1.mid","music/LEVEL02.mid","music/LEVEL03.mid","music/LEVEL04.mid","music/LEVEL05.mid","music/LEVEL06.mid","music/LEVEL07.mid"};
 String[] lvlImages = {loadImage("sprite sheets/level1.png"),loadImage("sprite sheets/level2.png"),loadImage("sprite sheets/level3.png"),loadImage("sprite sheets/level4.png"),loadImage("sprite sheets/level5.png"),loadImage("sprite sheets/level6.png"),loadImage("sprite sheets/level7.png")};
 
+int[] lvlTimes = {0,64*SPB,128*SPB,256*SPB,512*SPB,768*SPB};
+
 String failsound = "sounds/soundeffects/meatbeatfailnoise.ogg";
                    
 static final Level level1;
@@ -36,6 +38,10 @@ class Level {
     println(levelIndex);
     for(int i=0; i < numTracks; i++) {
       if(levelIndex==0)
+        beats[i][0] = beats[i][0] - SPB/2;
+      if(levelIndex==3)
+        beats[i][0] = beats[i][0] + SPB/2;
+      if(levelIndex==4)
         beats[i][0] = beats[i][0] - SPB/2;
       tracks[i] = new Track(beats[i],keyVals[i]);
     }

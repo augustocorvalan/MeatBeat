@@ -23,7 +23,7 @@ int currentState;
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
 
-static final int GROUND = HEIGHT - 50;
+static final int GROUND = HEIGHT- 50;
 
 PImage meatLife;  //image instance for meat life
 PImage fist;
@@ -31,7 +31,8 @@ PShape cloudImage;  //image for the cloud
 PImage meatImg;  //image for bouncing meat
 PImage deadMeatImg;  //inactive meat ball image
 String[] fists = {"sprite sheets/fist1.png","sprite sheets/fist2.png","sprite sheets/fist3.png","sprite sheets/fist4.png","sprite sheets/fist5.png","sprite sheets/fist6.png","sprite sheets/fist7.png"};
-PImage[] numbersImg = new PImage[10];
+PImage[] numbersImg = new PImage[10];  //holds the number images
+PImage grillImg;
 
 Player player;  //player instance
 
@@ -55,11 +56,13 @@ void setup(){
   cloudImage = loadShape("cloud.svg");
   meatLife = loadImage("sprite sheets/regularmeatball.png");
   meatImg = loadImage("sprite sheets/regularmeatball.png");
-  deadMeatImg = loadImage("sprite sheets/coldmeatball1.png");
+  deadMeatImg1 = loadImage("sprite sheets/coldmeatball1.png");
+  deadMeatImg2 = loadImage("sprite sheets/coldmeatball2.png");
   for(int i = 0; i < 10; i++){
     numbersImg[i] = loadImage("sprite sheets/" + i + ".png"); 
   }
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
+  grillImg = loadImage("sprite sheets/grill.png");
   
   PFont font = createFont("chubhand.ttf", 48); 
   textFont(font, 48);

@@ -29,10 +29,12 @@ class ColorWheel{
    color[] getColor(){
      colorMode(HSB,360);
      color[] colorArray = new color[3];
-     colorArray[0] = color(offset, intensity, 360);
-     colorArray[1] = color(offset + 120, intensity, 360);
-     colorArray[2] = color(offset + 240, intensity, 360);
+     colorArray[0] = color((offset%360), intensity, 100);
+     colorArray[1] = color(((offset + 120)%360), intensity, 100);
+     colorArray[2] = color(((offset + 240)%360), intensity, 70);
      offset++;
+     intensity++;
      colorMode(RGB);
+     return colorArray;
    }
 }
