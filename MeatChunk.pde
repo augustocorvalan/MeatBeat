@@ -1,5 +1,5 @@
-static final int MEAT_WIDTH = 25;
-static final int MEAT_HEIGHT = 25;
+static final int MEAT_WIDTH = 75;
+static final int MEAT_HEIGHT = 75;
 static final int DEFAULT_BOUNCE_HEIGHT = 0;
 static final int TIME_IN_HELL = 500;
 static final int BOUNCING = 1;
