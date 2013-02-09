@@ -1,7 +1,7 @@
 /**
 TREES
 **/
-static final float BPM = 120;
+static final float BPM = 110;
 int counter = 0; //keeps count of frame rate
 int length;
 //colors for tree

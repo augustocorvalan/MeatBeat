@@ -8,13 +8,19 @@ class GameplayState extends BaseState{
   Tree[] trees = new Tree[totalTrees];
   int totalClouds = 3;
   Cloud[] clouds = new Cloud[totalClouds];
+
+  int[] soundTimes;
+
   
   Level currentLevel;
   int currentTrackNum;
   Panel[] panelArray;
   MeatChunk[] chunkArray;
   int offset = 60;
-  float thresholdMS = 100;
+  float thresholdMS = 650;
+  int timingErrorControl = 10;
+  int[] shouldCheckBeat;
+  Baseline bl;
   
   void setup(){
     background(0);
@@ -26,19 +32,26 @@ class GameplayState extends BaseState{
     trees = setupTrees(totalTrees);  //tree setup
 
     /** LIVES **/
-    player = new Player(INITIAL_LIVES);  //new player instance
+    player = new Player(INITIAL_LIVES,0);  //new player instance
     
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
     currentLevel = new Level(beatsarray,soundNames[0]);
+    currentSPB = spb;
     getBeats(levelNames[1]);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
+    soundTimes = new int[currentTrackNum];
+    shouldCheckBeat = new int[currentTrackNum];
+    bl = new Baseline();
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
       chunkArray[i] = new MeatChunk(xpos, GROUND, 0, 0, currentLevel.getTrack(i));
       panelArray[i] = new Panel(xpos, GROUND+(PANEL_HEIGHT/2));
+      bl.addEmptyZone(xpos);
+      soundTimes[i] = millis();
+      shouldCheckBeat[i] = 0;
     }
   }
  
@@ -54,17 +67,20 @@ class GameplayState extends BaseState{
 
       /** LIVES **/
       player.drawLives();
-      
-      stroke(255);
-      line(0,GROUND,width,GROUND);  // line possibly temp for location of GROUND.
+      player.drawScore();
+      bl.draw();
       
       for(int i = 0; i < currentTrackNum; i++){
-        fill(255, 51, 51);
-        ellipse(chunkArray[i].xPosition, chunkArray[i].yPosition, MEAT_WIDTH, MEAT_HEIGHT);
-        chunkArray[i].move();
+        shouldCheckBeat[i] = chunkArray[i].move();
         panelArray[i].draw();
       }
+      if (shouldCheckBeat[0]==1) {
+          checkBeatSuccess(0);
+          playSound(currentLevel.getTrack(0).getSound());
+          //soundTimes[0] = millis();
+      }
   }
+  
  
   void keyPressed(){
     //setState(FINISH_STATE);
@@ -74,12 +90,14 @@ class GameplayState extends BaseState{
       if (key==currentLevel.getTrack(i).getKey()) {
         if (panelArray[i].offScreen) {
           panelArray[i].drawIt();
-          checkBeatSuccess(i);
+          //checkBeatSuccess(i);
         }
       }
     }
     
     if(key=='q') println(frameRate);
+    if(key=='w') playSound(failsound);
+    //if(key=='p') noLoop();
   }
     
   void cleanup(){
@@ -87,7 +105,9 @@ class GameplayState extends BaseState{
   }
   
   boolean checkBeatSuccess(int track) {
-    if ((abs(panelArray[track].getLastDraw() - (chunkArray[track].getLastBounce()+chunkArray[track].getBounceWait())) <= thresholdMS)) {
+    //int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].shouldBounceAgain);
+    //println(diff);
+    if (!panelArray[track].offScreen) {
     //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {
       beatSuccess(track);
     }
@@ -97,11 +117,20 @@ class GameplayState extends BaseState{
   }
   
   void beatSuccess(int track) {
-    playSound(currentLevel.getTrack(track).getSound());
+    //playSound(currentLevel.getTrack(track).getSound());
+    //chunkArray[track].track.canSound=true;
+    currentLevel.getTrack(track).canSound=true;
+    player.changeScore(1);
+    //chunkArray[track].canBounce=true;
+    
   }
   
   void beatFailure(int track) {
-    
+    //playSound(failsound);
+    //chunkArray[track].track.canSound=false;
+    currentLevel.getTrack(track).canSound=false;
+    player.decreaseLives();
+    chunkArray[track].fail();
   }
   
 }

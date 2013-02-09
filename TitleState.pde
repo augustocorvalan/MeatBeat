@@ -9,8 +9,7 @@ class TitleState extends BaseState{
   }
   
   void keyPressed(){
-    //TEST REMOVE
-    setState(GAMEPLAY_STATE);
+      setState(GAMEPLAY_STATE);
   }
   
   void cleanup(){

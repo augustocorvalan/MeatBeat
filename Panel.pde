@@ -26,9 +26,9 @@ class Panel{
   
   void drawIt() {
     offScreen = false;
-    lastDraw = millis();
     fill(213, 143, 45, opacity);
-    rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT); 
+    rect(xPosition, yPosition, PANEL_WIDTH, PANEL_HEIGHT);
+    lastDraw = millis();
   }
   
   void draw(){
