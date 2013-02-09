@@ -11,7 +11,7 @@ int treeBlue = 155;
 String colorConstant = "red"; //keeps track of which color not to vary
 
 class Tree{
-  int x, y, height;
+  int x, y, height, opacity, stroke;
   float angle;
   Tree(int x, int y, int height){
     this.x = x;
@@ -34,6 +34,18 @@ class Tree{
   float getAngle(){
     return angle;
   }
+  void setOpacity(int op){
+    this.opacity = op;
+  }
+  int getOpacity(){
+    return opacity;
+  }
+  void setStroke(int str){
+    stroke = str;
+  }
+  int getStroke(){
+    return stroke;
+  }
 }
 
 Tree[] setupTrees(int treeTotal){
@@ -46,13 +58,10 @@ Tree[] setupTrees(int treeTotal){
   for(int i = 0; i < treeTotal; i++){
     //randomly generate height and x between range 
     int height = floor(random(shortestTree, tallestTree));
-//    int x = floor(random(xMin, xMax));
-//    x += 100;
     int y = HEIGHT - height;
-    //increase the x range
-//    xMin += 100;
-//    xMax += 100;
     trees[i] = new Tree(x, y, height);
+    trees[i].setOpacity(random(75, 200));  //randomize tree opacity
+    trees[i].setStroke(random(5, 10));  //randomize stroke
     //randomly assign some trees a different starting angle
     if(random(0, treeTotal/3) == 1) trees[i].setAngle(30);   
   }
@@ -69,7 +78,7 @@ void drawTrees(Tree[] trees){
   for(int i = 0; i < length; i++){
    Tree t = trees[i];
    float angle = t.getAngle();
-   drawTree(t.getX(), t.getY(), t.getHeight() + frameCount*0.01, i, angle);
+   drawTree(t, i, angle);
    //Update the tree angle
    float buffer = (BPM/60) / frameRate / 8  * 2 * PI; //slow down bpm by this much
    angle += buffer;
@@ -81,7 +90,13 @@ void drawTrees(Tree[] trees){
 }
 
 //@param height of tree
-void drawTree(int x, int y, int height, int i, float angle){
+void drawTree(Tree t, int i, float angle){
+  int x = t.getX();
+  int y = t.getY();
+  int height = t.getHeight();
+  int opacity = t.getOpacity();
+  int str = t.getStroke();
+//  int stroke = t.getStroke();
   //TODO: NOT DRY, FIX LATER
   float red, green, blue;
   if(colorConstant.equals("red")){
@@ -97,10 +112,10 @@ void drawTree(int x, int y, int height, int i, float angle){
     green = treeGreen*sin(angle);
     blue = treeBlue;
   }
-  float alpha = 200 - frameCount * 0.01;
+//  float alpha = 200 - frameCount * 0.1;
   if(alpha <= 0) return;  //if tree opacity is invisible, don't draw
-  stroke(red, green, blue, alpha);
-  strokeWeight(5 + frameCount*0.01);
+  stroke(red, green, blue, opacity);
+  strokeWeight(str);
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;
   // Convert it to radians
@@ -119,7 +134,7 @@ void branch(float h, float theta) {
   
   // All recursive functions must have an exit condition!!!!
   // Here, ours is when the length of the branch is 2 pixels or less
-  if (h > 10 + frameCount * 0.001) {
+  if (h > 10) {
     pushMatrix();    // Save the current state of transformation (i.e. where are we now)
     rotate(theta);   // Rotate by theta
  
