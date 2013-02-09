@@ -119,7 +119,7 @@ void drawTree(Tree t, int i, float angle, color[] c){
   int amplitude = 400;
   float a =  (amplitude*sin(angle)/ (float) width)  * 45f;
   // Convert it to radians
-  int gap = WIDTH/(length+1);
+  int gap = width/(length+1);
   translate(gap, 0);
   float theta = radians(a);
   // Start the recursive branching!

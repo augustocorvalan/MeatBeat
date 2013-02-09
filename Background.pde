@@ -2,28 +2,28 @@
 HILL
 *********/
 class Hill{
-  float x, y, width, height, start, stop;
-  Hill(float x, float y, float width, float height, float start, float stop){
+  float x, y, w, h, start, stop;
+  Hill(float x, float y, float w, float h, float start, float stop){
     this.x = x;
     this.y = y;
-    this.width = width;
-    this.height = height;
+    this.w = w;
+    this.h = h;
     this.start = start;
     this.stop = stop;
   }
   void draw(){
-    arc(x, y, width, height, start, stop);
+    arc(x, y, w, h, start, stop);
   }
 }
 
 Hill setupHill(float xOffset, float heightOffset, float widthOffset){
-  float x = 2*WIDTH/10 + xOffset;
-  float y = HEIGHT/10 + HEIGHT * 0.9;
-  float width = WIDTH/2 + widthOffset;
-  float height =  HEIGHT * 1 + heightOffset;
+  float x = 2*width/10 + xOffset;
+  float y = height/10 + height * 0.9;
+  float hillWidth = width/2 + widthOffset;
+  float hillHeight =  height * 1 + heightOffset;
   float start = -PI;
   float stop = 0;
-  Hill h = new Hill(x, y, width, height, start, stop);
+  Hill h = new Hill(x, y, hillWidth, hillHeight, start, stop);
   return h;
 }
 
@@ -35,7 +35,7 @@ void setupHills(Hill[] hills){
   float widthOffset = 0;
   for(int i = 0; i < number; i++){
     hills[i] = setupHill(xOffset, heightOffset, widthOffset);
-    xOffset += WIDTH/number;
+    xOffset += width/number;
     heightOffset += 100;
     widthOffset += 25;
     if(int(random(2)) == 1) heightOffset *= -1;  //randomly make half shorter
@@ -119,7 +119,7 @@ void drawClouds(Cloud[] clouds, color[] c){
     cloudHeight = cloud.getHeight();
     shape(cloudImage, cloud.getX(), cloud.getY(), cloud.getWidth(), cloud.getHeight());
     cloud.setX(cloud.getRate() + cloud.getX());
-    if(cloud.getX() > WIDTH + cloud.getWidth()){  //if a cloud nears the edge of the screen, add another
+    if(cloud.getX() > width + cloud.getWidth()){  //if a cloud nears the edge of the screen, add another
       clouds[i] = setupCloud();
     }
   }
@@ -148,7 +148,7 @@ void drawLine(){
  pushMatrix();
  strokeWeight(4);
   for(int i = 0; i < number; i++){
-    line(0, as[i], WIDTH, as[i]);
+    line(0, as[i], width, as[i]);
       as[i] = as[i] - rate[i] * BPM/150;
     if(as[i] < 0)
       as[i] = HEIGHT/2 * random(1,10);

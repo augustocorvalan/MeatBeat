@@ -31,12 +31,14 @@ PShape cloudImage;  //image for the cloud
 PImage meatImg;  //image for bouncing meat
 PImage deadMeatImg;  //inactive meat ball image
 String[] fists = {"sprite sheets/fist1.png","sprite sheets/fist2.png","sprite sheets/fist3.png","sprite sheets/fist4.png","sprite sheets/fist5.png","sprite sheets/fist6.png","sprite sheets/fist7.png"};
+PImage[] numbersImg = new PImage[10];  //holds the number images
+PImage grillImg;
 
 Player player;  //player instance
 
 int levelIndex = 0; // keeps track of current level
 
-boolean INVINSIBLE = true;  //debugging purposes only
+boolean INVINSIBLE = false;  //debugging purposes only
 
 void setup(){
   frameRate(MAX_FRAME_RATE);
@@ -54,8 +56,13 @@ void setup(){
   cloudImage = loadShape("cloud.svg");
   meatLife = loadImage("sprite sheets/regularmeatball.png");
   meatImg = loadImage("sprite sheets/regularmeatball.png");
-  deadMeatImg = loadImage("sprite sheets/coldmeatball1.png");
+  deadMeatImg1 = loadImage("sprite sheets/coldmeatball1.png");
+  deadMeatImg2 = loadImage("sprite sheets/coldmeatball2.png");
+  for(int i = 0; i < 10; i++){
+    numbersImg[i] = loadImage("sprite sheets/" + i + ".png"); 
+  }
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
+  grillImg = loadImage("sprite sheets/grill.png");
   
   PFont font = createFont("chubhand.ttf", 48); 
   textFont(font, 48);
@@ -260,10 +267,14 @@ class BaseState{
   
   void keyPressed(){}
 }
+PImage grass = loadImage("sprite sheets/grassblock.png");
+final static int GRASS_HEIGHT = HEIGHT - GROUND;
+
 class Baseline {
   
   int[] spaces = new int[8];
   int numSpaces = 0;
+  
   
   void addEmptyZone(int xPos) {
     spaces[numSpaces] = xPos - MEAT_WIDTH/2;
@@ -274,10 +285,12 @@ class Baseline {
     stroke(255);
     int x1 = 0;
     for(int i=0; i < numSpaces; i++) {
-      line(x1,GROUND,spaces[i],GROUND);
+      //line(x1,GROUND,spaces[i],GROUND);
+      image(grass,x1,GROUND,spaces[i]-x1,GRASS_HEIGHT);
       x1 = spaces[i] + MEAT_WIDTH;
     }
-    line(x1,GROUND,WIDTH,GROUND);
+    //line(x1,GROUND,WIDTH,GROUND);
+    image(grass,x1,GROUND,WIDTH-x1,GRASS_HEIGHT);
   }
   
 }
@@ -379,9 +392,6 @@ class ColorWheel{
      return colorArray;
    }
 }
-color[] colors = {
-  //add colors here
-};
 class FinishState extends BaseState{
   int CHUNK_NUMBER = 4;
   MeatChunk[] chunkArray;
@@ -392,13 +402,15 @@ class FinishState extends BaseState{
   
   void setup(){
   playSound("sounds/soundeffects/meatbeatscorescreen.ogg");
-  
-  }
+  setupScore();
+}
  
   void draw(){
     background(0);
-    text("Hey meatbeater! Thanks for playing!", WIDTH/2, HEIGHT/2);
-    text("Total score: " + player.getScore(), WIDTH/2, HEIGHT/2 + 60);
+    text("Hey meatbeater! Thanks for playing!", WIDTH/2, HEIGHT/5);
+//    text("Total score: " + player.getScore(), WIDTH/2, HEIGHT/2 + 60);
+    drawScore();
+    
   }
  
   void keyPressed(){
@@ -537,11 +549,13 @@ class GameplayState extends BaseState{
     if(key=='1') setNextLevel();
     if(key=='q') println(frameRate);
     if(key=='w') playSound(failsound);
-    //if(key=='p') noLoop();
+    if(key=='p') noLoop();
+    if(key=='x') setState(FINISH_STATE);
+    if(key=='c') player.changeScore(10);
   }
     
   void cleanup(){
-   
+    stopMaster();
   }
   
   boolean checkBeatSuccess(int track) {
@@ -570,6 +584,8 @@ class GameplayState extends BaseState{
 }
 String[] levelNames = {"music/L1.mid","music/LEVEL02.mid","music/LEVEL03.mid","music/LEVEL04.mid","music/LEVEL05.mid","music/LEVEL06.mid","music/LEVEL07.mid"};
 String[] lvlImages = {loadImage("sprite sheets/level1.png"),loadImage("sprite sheets/level2.png"),loadImage("sprite sheets/level3.png"),loadImage("sprite sheets/level4.png"),loadImage("sprite sheets/level5.png"),loadImage("sprite sheets/level6.png"),loadImage("sprite sheets/level7.png")};
+
+int[] lvlTimes = {0,64*SPB,128*SPB,256*SPB,512*SPB,768*SPB};
 
 String failsound = "sounds/soundeffects/meatbeatfailnoise.ogg";
                    
@@ -606,6 +622,10 @@ class Level {
     println(levelIndex);
     for(int i=0; i < numTracks; i++) {
       if(levelIndex==0)
+        beats[i][0] = beats[i][0] - SPB/2;
+      if(levelIndex==3)
+        beats[i][0] = beats[i][0] + SPB/2;
+      if(levelIndex==4)
         beats[i][0] = beats[i][0] - SPB/2;
       tracks[i] = new Track(beats[i],keyVals[i]);
     }
@@ -648,11 +668,14 @@ class MeatChunk{
   int timeReturnFromFail;
   int failTime;
   int state;
-  int lastUpdate;
+  int lastMove;
   int framingError;
   int currentError;
   int[] bounceTimes;
   boolean correctError;
+  int expectedMusicTime;
+  PImage drawImg;
+  int lastBlueSwitch;
   
   MeatChunk(int xPosition, int yPosition, float g, float vy, Track t){
     this.xPosition = xPosition;
@@ -665,13 +688,13 @@ class MeatChunk{
     this.currentBeat = 0;
     makeInActive();
     if(INVINSIBLE){  //for debugging purposes only, take out later
-      this.timeReturnFromFail = millis() + 128000*SPB;
+      this.timeReturnFromFail = millis() + 300000*SPB;
     } else{
       this.timeReturnFromFail = millis() + 4000*SPB;
     } 
     this.failTime = 0;
     state = BOUNCING;
-    lastUpdate = millis();
+    lastMove = millis();
     framingError = 0;
     correctError = true;
     /*bounceTimes = new int[track.getBeats().length];
@@ -681,6 +704,9 @@ class MeatChunk{
       println(bounceTimes[i]);
     }*/
     this.shouldBounceAgain = 0;
+    expectedMusicTime = master.currentTime;
+    lastBlueSwitch = 0;
+    drawImg = deadMeatImg1;
   }
   
   void increment(){
@@ -691,13 +717,19 @@ class MeatChunk{
   int move() {
     if (state != COMPLETE) {
       draw();
-
-      //if( currentError <= 5 || currentError >= 500 ) { // ball should be bouncing
+      lastMove = millis();
       //if(millis() >= bounceTimes[currentBeat]) {
-        if ((shouldBounceAgain - millis()) <= 9  || millis() >= shouldBounceAgain) {
+      if (millis() >= shouldBounceAgain) {
         //framingError += currentError;
+        float diff = 0;
+        setMaster(0);
+        if (currentBeat != 0) {
+          expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
+          diff = master.currentTime - expectedMusicTime;
+          println("diff = " + diff);
+        }
         currentError = abs(millis() - shouldBounceAgain);
-        doBounce(currentError);
+        doBounce(diff);
         updateCurrentBeat();
         if(!active && millis() >= timeReturnFromFail) { // ball has had two test bounces. maybe change this system to actually be about current beat. makes more sense.
           makeActive();
@@ -723,16 +755,20 @@ class MeatChunk{
   void makeInActive() {
     active = false;
     opacity = 50;
+    drawImg = deadMeatImg1;
   }
   
   void draw() {
-//    fill(255, 51, 51, opacity);
-//    ellipse(xPosition, yPosition, MEAT_WIDTH, MEAT_HEIGHT);
-    PImage drawImg;
     if(active){
       drawImg = meatImg;
-    } else{
-      drawImg = deadMeatImg;
+    }
+    else if(drawImg == deadMeatImg1 && (millis() - lastBlueSwitch) >= 250) {
+      drawImg = deadMeatImg2;
+      lastBlueSwitch = millis();
+    }
+    else if(drawImg == deadMeatImg2 && (millis() - lastBlueSwitch) >= 250){
+      drawImg = deadMeatImg1;
+      lastBlueSwitch = millis();
     }
     image(drawImg, xPosition, yPosition, MEAT_WIDTH, MEAT_HEIGHT);
   }
@@ -753,22 +789,18 @@ class MeatChunk{
     }
   }
   
-  void doBounce(int timeError) {
-    if (timeError > 500) timeError = 0;
+  void doBounce(float timeError) {
     //correctError = !correctError;
-    println(timeError/1000f);
-    float period = track.getBeat(currentBeat);
+    if (currentBeat==0 && levelIndex ==1)
+      float period = track.getBeat(currentBeat);
+    else
+      float period = track.getBeat(currentBeat) - timeError;
     float ht = DEFAULT_BOUNCE_HEIGHT + (period * unitHeight / SPB);
     bounce(period, ht);
     //setTimeout(doBounce, 1000*period); // want to wait period in milliseconds before calling again.
     bounceWait = (int)(1000*period); // period in ms
     lastBounce = millis();
-    if (correctError) {
-      shouldBounceAgain = lastBounce + bounceWait;// - timeError;
-    }
-    else {
-      shouldBounceAgain = lastBounce + bounceWait;
-    }
+    shouldBounceAgain = lastBounce + bounceWait;// - timeError*2;
   }
   
   void doUpdate() {
@@ -816,21 +848,37 @@ class MeatChunk{
   }
   
 }
-PImage meatFont; //used to display the score 
+PImage meatFont; //used to display the score
 
-PImage[] cutUpNumbers(PImage font){
-  int totalNumbers = 10;
-  PImage[] numbers = new PImage[totalNumbers];
-  int xOffset = 120;
-  int yOffset = 180;
-  int x = 0;
-  for(int i = 0; i < totalNumbers; i++){
-    numbers[i] = font.get(x, 180, xOffset, yOffset);
-    x += xOffset;  
-  }
-  return numbers;
+ArrayList digits = new ArrayList();
+
+int GRILLDIMENSIONS = 500;
+int MEATX = 124 * 0.75;
+int MEATY = 180 * 0.75;
+
+void setupScore(){
+  int score = player.getScore();
+  if(score == 0){
+    digits.add(0);
+  } else{
+    while(score > 0) {
+      digit = floor(score % 10);
+      digits.add(digit);
+      score = floor(score / 10);
+    }
+  } 
 }
 
+void drawScore(){
+  //draw background grill
+  image(grillImg, WIDTH/5, HEIGHT/5, GRILLDIMENSIONS, GRILLDIMENSIONS);
+  for(int i = 0; i < digits.size(); i++){
+    int digit = digits.get(i);
+    PImage digitImg = numbersImg[digit];
+    int offset = 1.58;
+    image(digitImg, WIDTH/offset - (i * MEATX), HEIGHT/2, MEATX, MEATY);
+  }  
+}
 /**
 TREES
 **/
@@ -1070,15 +1118,22 @@ class Player{
 }
 class TitleState extends BaseState{
   int startTime;
+  PImage logo = loadImage("sprite sheets/logo.png");
+  PImage play = loadImage("sprite sheets/play.png");
   void setup(){
     background(255, 0, 0);
-    text("MeatBeat: The Test Title Screen", width/2, height/2);
+//    text("MeatBeat: The Test Title Screen", width/2, height/2);
     playIntro();
   }
  
   void draw(){
+        fill(100);
+        rect(width/2, height/2.5, width/1.5, width/1.8, 20);
+        rect(width/2.05, height*0.865, width/5.4, height/6, 5);
+        image(logo, width/8, -width/16, width*3/4, width*3/4);
+        image(play, width/2.7, height*3/4, width/4, height/4);
   }
-  
+ 
   void keyPressed(){
       if(key=='p') stopIntro();
       else if(key=='o') playMaster();
@@ -1086,7 +1141,7 @@ class TitleState extends BaseState{
       else
       setState(GAMEPLAY_STATE);
   }
-  
+
   void cleanup(){
     stopIntro();
   }
