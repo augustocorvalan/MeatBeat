@@ -120,12 +120,7 @@ class GameplayState extends BaseState{
       }
     }
     
-    if(key=='1') setNextLevel();
-    if(key=='q') println(frameRate);
-    if(key=='w') playSound(failsound);
     if(key=='p') noLoop();
-    if(key=='x') setState(FINISH_STATE);
-    if(key=='c') player.changeScore(10);
   }
     
   void cleanup(){
