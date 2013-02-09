@@ -19,7 +19,7 @@ class GameplayState extends BaseState{
   Panel[] panelArray;
   MeatChunk[] chunkArray;
   int offset = 60;
-  float thresholdMS = 650;
+  float thresholdMS = 1000;
   int timingErrorControl = 10;
   int[] shouldCheckBeat;
   Baseline bl;
@@ -100,7 +100,7 @@ class GameplayState extends BaseState{
           //playSound(currentLevel.getTrack(0).getSound());
           //soundTimes[0] = millis();
       }*/
-      if (levelComplete && millis() > lvlTimes[levelIndex]) {
+      if (levelComplete) {
         //setState(BETWEEN_LEVELS_STATE);
         //setState(GAMEPLAY_STATE);
         setNextLevel();
@@ -112,13 +112,10 @@ class GameplayState extends BaseState{
   
  
   void keyPressed(){
-    //setState(FINISH_STATE);
-    //player.decreaseLives();
     for (int i = 0; i < currentLevel.getNumTracks(); i++) {
       if (key==currentLevel.getTrack(i).getKey()) {
         if (panelArray[i].offScreen) {
           panelArray[i].drawIt();
-          //checkBeatSuccess(i);
         }
       }
     }
@@ -136,10 +133,11 @@ class GameplayState extends BaseState{
   }
   
   boolean checkBeatSuccess(int track) {
-    //int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].shouldBounceAgain);
-    //println(diff);
-    if (!panelArray[track].offScreen) {
+    int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].shouldBounceAgain);
+    println(diff);
+    //if (!panelArray[track].offScreen) {
     //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {
+    if( abs(diff) <= thresholdMS) {
       beatSuccess(track);
     }
     else {

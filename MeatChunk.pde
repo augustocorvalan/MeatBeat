@@ -107,7 +107,6 @@ class MeatChunk{
   
   void makeInActive() {
     active = false;
-    opacity = 50;
     drawImg = deadMeatImg1;
   }
   
@@ -173,14 +172,14 @@ class MeatChunk{
   void fail() {
     makeInActive();
     failTime = millis();
-    shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
+    //shouldBounceAgain = failTime + track.getBeat(currentBeat+1);// + track.getBeat(currentBeat+2);    // start bouncing in ghost mode after two beats
     timeReturnFromFail = failTime + 4000*SPB;   // become active again after four beats
-    expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
-    updateCurrentBeat();
+    //expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
+    //updateCurrentBeat();
     //state = IN_HELL;
-    yPosition = HEIGHT + MEAT_HEIGHT;
-    velocity = -1/1000f;
-    gravity = 0;
+    //yPosition = HEIGHT + MEAT_HEIGHT;
+    //velocity = 0;
+    //gravity = 0;
     //playFail();
   }
   

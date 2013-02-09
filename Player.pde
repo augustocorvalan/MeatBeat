@@ -9,7 +9,7 @@ class Player{
    
    void decreaseLives(){
      lives--;
-     if(lives<=0) setState(FINISH_STATE);; // should have endGame();
+     if(lives<=0) setState(FINISH_STATE); // should have endGame();
    }
    
    int getLives(){

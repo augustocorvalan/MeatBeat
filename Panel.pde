@@ -5,7 +5,7 @@ class Panel{
   float xPosition, yPosition, origY;
   boolean offScreen;
   int lastDraw;
-  int waitTime = 200; // ms between allowable presses
+  int waitTime = 100; // ms between allowable presses
   
   Panel(float xPosition, float yPosition){
     this.xPosition = xPosition;
