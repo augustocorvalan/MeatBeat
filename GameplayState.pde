@@ -4,7 +4,7 @@ class GameplayState extends BaseState{
   **/
   int totalHills = width * 0.00375;
   Hill[] hills = new Hill[totalHills];
-  int totalTrees = 3;
+  int totalTrees = width * 0.00375;
   Tree[] trees = new Tree[totalTrees];
   int totalClouds = 3;
   Cloud[] clouds = new Cloud[totalClouds];
