@@ -127,30 +127,27 @@ LINES
 /**************
 Ascending Lines
 **************/
-
-int green;
-int blue;
 int number = 20;
 float[] as;
+float[] rate;
+
 void setupLine(){
    as = new float[number];
+   rate = new float[number];
    for(int i = 0; i < number; i++){
      as[i] = HEIGHT/2 * random(1, 10);
+     rate[i] = random(1,2);
    } 
 }
 
 void drawLine(){
  pushMatrix();
+ strokeWeight(4);
   for(int i = 0; i < number; i++){
-    if(frameCount % 47 == 0){
-     green = random(0,255);
-     blue = random(0, 255);
-    }
-    stroke(255, green, blue);
     line(0, as[i], WIDTH, as[i]);
-    as[i] = as[i] - BPM/150;
+      as[i] = as[i] - rate[i] * BPM/150;
     if(as[i] < 0)
-    as[i] = HEIGHT/2 * random(1,10);
+      as[i] = HEIGHT/2 * random(1,10);
   }
    popMatrix();
 }
