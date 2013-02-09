@@ -35,12 +35,11 @@ class Level {
   Level(float[][] beats) {
     numTracks = calcNumTracks(beats);
     tracks = new Track[numTracks+1];
-    println(levelIndex);
     for(int i=0; i < numTracks; i++) {
       if(levelIndex==0)
         beats[i][0] = beats[i][0] - SPB/2;
       if(levelIndex==3)
-        beats[i][0] = beats[i][0] + SPB/2;
+        beats[i][0] = beats[i][0] + SPB;
       if(levelIndex==4)
         beats[i][0] = beats[i][0] - SPB/2;
       tracks[i] = new Track(beats[i],keyVals[i]);

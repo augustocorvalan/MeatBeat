@@ -134,7 +134,6 @@ class GameplayState extends BaseState{
   
   boolean checkBeatSuccess(int track) {
     int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].previousBounceTime);
-    println(diff);
     //if (!panelArray[track].offScreen) {
     //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {
     if( abs(diff) <= thresholdMS) {
