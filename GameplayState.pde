@@ -18,9 +18,9 @@ class GameplayState extends BaseState{
   MeatChunk[] chunkArray;
   int offset = 60;
   float thresholdMS = 650;
+  int timingErrorControl = 10;
   int[] shouldCheckBeat;
   Baseline bl;
-  Boolean levelComplete;
   
   void setup(){
     background(0);
@@ -30,23 +30,22 @@ class GameplayState extends BaseState{
     **/
     setupHills(hills);  //hill setup
     trees = setupTrees(totalTrees);  //tree setup
+    setupClouds(clouds);  //cloud setup
 
     /** LIVES **/
     player = new Player(INITIAL_LIVES,0);  //new player instance
     
 //    player = new Player(INITIAL_LIVES, meatLife);  //player instance
 //    player.setupLives();
-    currentLevel = new Level(beatsarray,soundNames[levelIndex]);
+    currentLevel = new Level(beatsarray,soundNames[0]);
     currentSPB = spb;
-    levelIndex++;
-    getBeats(levelNames[levelIndex]);
+    getBeats(levelNames[1]);
     currentTrackNum = currentLevel.getNumTracks();
     panelArray = new Panel[currentTrackNum];
     chunkArray = new MeatChunk[currentTrackNum];
     soundTimes = new int[currentTrackNum];
     shouldCheckBeat = new int[currentTrackNum];
     bl = new Baseline();
-    levelComplete = false;
     for(int i = 0; i < currentTrackNum; i++){
       int xpos = offset + (width - offset * 2) / (currentTrackNum - 1) * i;
       chunkArray[i] = new MeatChunk(xpos, GROUND, 0, 0, currentLevel.getTrack(i));
@@ -58,15 +57,13 @@ class GameplayState extends BaseState{
   }
  
   void draw(){
-    
-      levelComplete = true;
       background(143);
       
       /** 
         BACKGROUND DRAW
       **/
-      drawHills(hills);
       drawClouds(clouds);
+      drawHills(hills);
       drawTrees(trees);
 
       /** LIVES **/
@@ -77,22 +74,17 @@ class GameplayState extends BaseState{
       for(int i = 0; i < currentTrackNum; i++){
         shouldCheckBeat[i] = chunkArray[i].move();
         panelArray[i].draw();
-        if (chunkArray[i].state != COMPLETE) {
-          levelComplete = false;
-        }
       }
       if (shouldCheckBeat[0]==1) {
           checkBeatSuccess(0);
           playSound(currentLevel.getTrack(0).getSound());
           //soundTimes[0] = millis();
       }
-      if (levelComplete) {
-        setState(BETWEEN_LEVELS_STATE);
-      }
   }
   
  
   void keyPressed(){
+    //setState(FINISH_STATE);
     //player.decreaseLives();
     
     for (int i = 0; i < currentLevel.getNumTracks(); i++) {
@@ -106,8 +98,7 @@ class GameplayState extends BaseState{
     
     if(key=='q') println(frameRate);
     if(key=='w') playSound(failsound);
-    if(key=='p') noLoop();
-    if(key=='t') setState(BETWEEN_LEVELS_STATE);
+    //if(key=='p') noLoop();
   }
     
   void cleanup(){
