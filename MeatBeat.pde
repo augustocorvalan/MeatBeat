@@ -12,7 +12,7 @@ static final int BPM = 110;
 static final float SPB = 0.5454545;
 boolean startMaster = false;
 
-static final int INITIAL_LIVES = 100;
+static final int INITIAL_LIVES = 20;
 
 static final int MAX_FRAME_RATE = 120;
 int fps = 0;  //how many frames drawn this second  
@@ -23,7 +23,7 @@ int currentState;
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
 
-static final int GROUND = height - 50;
+static final int GROUND = HEIGHT - 50;
 
 PImage meatLife;  //image instance for meat life
 PImage fist;
@@ -44,7 +44,7 @@ boolean INVINSIBLE = false;  //debugging purposes only
 void setup(){
   frameRate(MAX_FRAME_RATE);
   getBeats(levelNames[levelIndex]);
-  size(800, 600);
+  size(window.innerWidth, window.innerHeight); 
   background(255);
   currentState = FIRST_STATE;
   states = new BaseState[STATE_COUNT];

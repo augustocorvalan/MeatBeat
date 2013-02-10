@@ -1,4 +1,4 @@
-char[] keyVals = {'s','d','f','j','k','l'};
+char[] keyVals = {'q','w','e','r','t','y'};
 
 class Track {
   

@@ -12,7 +12,7 @@ static final int BPM = 110;
 static final float SPB = 0.5454545;
 boolean startMaster = false;
 
-static final int INITIAL_LIVES = 100;
+static final int INITIAL_LIVES = 20;
 
 static final int MAX_FRAME_RATE = 120;
 int fps = 0;  //how many frames drawn this second  
@@ -23,7 +23,7 @@ int currentState;
 static final int HEIGHT = 600;  //screen height
 static final int WIDTH = 800;  //screen width
 
-static final int GROUND = HEIGHT- 50;
+static final int GROUND = height - 50;
 
 PImage meatLife;  //image instance for meat life
 PImage fist;
@@ -33,6 +33,7 @@ PImage deadMeatImg;  //inactive meat ball image
 String[] fists = {"sprite sheets/fist1.png","sprite sheets/fist2.png","sprite sheets/fist3.png","sprite sheets/fist4.png","sprite sheets/fist5.png","sprite sheets/fist6.png","sprite sheets/fist7.png"};
 PImage[] numbersImg = new PImage[10];  //holds the number images
 PImage grillImg;
+PImage replayImg;
 
 Player player;  //player instance
 
@@ -43,7 +44,7 @@ boolean INVINSIBLE = false;  //debugging purposes only
 void setup(){
   frameRate(MAX_FRAME_RATE);
   getBeats(levelNames[levelIndex]);
-  size(800, 600);
+  size(window.innerWidth, window.innerHeight); 
   background(255);
   currentState = FIRST_STATE;
   states = new BaseState[STATE_COUNT];
@@ -63,6 +64,7 @@ void setup(){
   }
   meatFont = loadImage("sprite sheets/number font_v2.png");  //load meat font
   grillImg = loadImage("sprite sheets/grill.png");
+  replayImg = loadImage("sprite sheets/replay.png");
   
   PFont font = createFont("chubhand.ttf", 48); 
   textFont(font, 48);
@@ -204,7 +206,7 @@ void setupClouds(Cloud[] clouds){
 Cloud setupCloud(){
   int x = -200 - floor(random(50,100));
   float yOffset = random(0.6, 1);
-  int y = HEIGHT - HEIGHT * yOffset;
+  int y = height - height * yOffset;
   float rateOffset = random(300, 800);
   int baseRate = BPM;
   int rt = baseRate/rateOffset;
@@ -242,7 +244,7 @@ void setupLine(){
    as = new float[number];
    rate = new float[number];
    for(int i = 0; i < number; i++){
-     as[i] = HEIGHT/2 * random(1, 10);
+     as[i] = height/2 * random(1, 10);
      rate[i] = random(1,2);
    } 
 }
@@ -254,7 +256,7 @@ void drawLine(){
     line(0, as[i], width, as[i]);
       as[i] = as[i] - rate[i] * BPM/150;
     if(as[i] < 0)
-      as[i] = HEIGHT/2 * random(1,10);
+      as[i] = height/2 * random(1,10);
   }
    popMatrix();
 }
@@ -268,7 +270,7 @@ class BaseState{
   void keyPressed(){}
 }
 PImage grass = loadImage("sprite sheets/grassblock.png");
-final static int GRASS_HEIGHT = HEIGHT - GROUND;
+final static int GRASS_HEIGHT = GROUND;
 
 class Baseline {
   
@@ -290,7 +292,7 @@ class Baseline {
       x1 = spaces[i] + MEAT_WIDTH;
     }
     //line(x1,GROUND,WIDTH,GROUND);
-    image(grass,x1,GROUND,WIDTH-x1,GRASS_HEIGHT);
+    image(grass,x1,GROUND,width-x1,GRASS_HEIGHT);
   }
   
 }
@@ -529,7 +531,7 @@ class GameplayState extends BaseState{
         setNextLevel();
       }
       if ((millis() - levelStart) <= NEW_LEVEL_TIME) {
-        image(lvlImages[levelIndex-1], width/2-100, height/4,200,40);
+        image(lvlImages[levelIndex-1], width/2-100, height/4,400,80);
       }
   }
   
@@ -543,12 +545,7 @@ class GameplayState extends BaseState{
       }
     }
     
-    if(key=='1') setNextLevel();
-    if(key=='q') println(frameRate);
-    if(key=='w') playSound(failsound);
     if(key=='p') noLoop();
-    if(key=='x') setState(FINISH_STATE);
-    if(key=='c') player.changeScore(10);
   }
     
   void cleanup(){
@@ -557,7 +554,6 @@ class GameplayState extends BaseState{
   
   boolean checkBeatSuccess(int track) {
     int diff = abs(panelArray[track].getLastDraw() - chunkArray[track].previousBounceTime);
-    println(diff);
     //if (!panelArray[track].offScreen) {
     //if ((abs((chunkArray[track].yPosition+MEAT_HEIGHT/2) - (panelArray[track].origY-PANEL_HEIGHT/2)) <= threshold)) {
     if( abs(diff) <= thresholdMS) {
@@ -617,12 +613,11 @@ class Level {
   Level(float[][] beats) {
     numTracks = calcNumTracks(beats);
     tracks = new Track[numTracks+1];
-    println(levelIndex);
     for(int i=0; i < numTracks; i++) {
       if(levelIndex==0)
         beats[i][0] = beats[i][0] - SPB/2;
       if(levelIndex==3)
-        beats[i][0] = beats[i][0] + SPB/2;
+        beats[i][0] = beats[i][0] + SPB;
       if(levelIndex==4)
         beats[i][0] = beats[i][0] - SPB/2;
       tracks[i] = new Track(beats[i],keyVals[i]);
@@ -823,9 +818,11 @@ class MeatChunk{
     //expectedMusicTime = expectedMusicTime + track.getBeat(currentBeat-1);
     //updateCurrentBeat();
     //state = IN_HELL;
+
     //yPosition = HEIGHT + MEAT_HEIGHT;
     //velocity = 0;
     //gravity = 0;
+
     //playFail();
   }
   
@@ -857,7 +854,7 @@ void setupScore(){
       digits.add(digit);
       score = floor(score / 10);
     }
-  } 
+  }
 }
 
 void drawScore(){
@@ -929,7 +926,7 @@ Tree[] setupTrees(int treeTotal){
   for(int i = 0; i < treeTotal; i++){
     //randomly generate height and x between range 
     int height = floor(random(shortestTree, tallestTree));
-    int y = HEIGHT - height;
+    int y = height - height;
     trees[i] = new Tree(x, y, height);
     trees[i].setOpacity(random(75, 200));  //randomize tree opacity
     trees[i].setStroke(random(5, 10));  //randomize stroke
@@ -941,7 +938,7 @@ Tree[] setupTrees(int treeTotal){
 
 void drawTrees(Tree[] trees, color[] c){
   pushMatrix();
-  translate(0, HEIGHT-50);
+  translate(0, height-50);
   counter++;
   float constant = 0.25; //constant to slow down bps artificially
   float bps = BPM/60; 
@@ -1108,22 +1105,25 @@ class Player{
 }
 class TitleState extends BaseState{
   int startTime;
-  PImage logo = loadImage("sprite sheets/logo.png");
   String[] quotes = {"When Meat Attacks", "Meat me at the Meat shop","The Meatshop Chronicles","Meat and Destroy","Meat and Prejudice","The Meat Files","Meatocracy","To Meat or not to Meat","Baconbacond and bacon","Meat Zone 2","Mega Meat","Meating of the Meats","Meatups","Meat Raider","That's a Meat","Beauty and the Meat","The pen is not Beatlier than the Meat","M for Meatdetta", "I came here to Beat Meat and chew bubble gum. I'm out of gum..."};
   int quote;
   String word;
+  PImage logo;
   void setup(){
     background(200, 0, 0);
     playIntro();
     quote = int(random(quotes.length-1));
     fill(255);
     text(quotes[quote], width/2, height*7/8);
+    logo = loadImage("sprite sheets/logo.png");
+    imageMode(CENTER);
   }
  
   void draw(){
-        fill(100);
-        rect(width/2, height/2.5, width/1.5, width/1.8, 20);
-        image(logo, width/8, -width/16, width*3/4, width*3/4);
+    background(200, 0, 0);
+    image(logo, width/2, height/2, (700/860) * width * 3/4, (860/700) * height * 3/4);
+    fill(255);
+    text(quotes[quote], width/2, height*7/8);
 }
  
   void keyPressed(){
@@ -1136,9 +1136,10 @@ class TitleState extends BaseState{
 
   void cleanup(){
     stopIntro();
+    imageMode(CORNER);
   }
 }
-char[] keyVals = {'s','d','f','j','k','l'};
+char[] keyVals = {'q','w','e','r','t','y'};
 
 class Track {
   
@@ -1148,7 +1149,6 @@ class Track {
   Track(float[] beatmatrix, char kv) {
     beats = beatmatrix;
     //beats[0] = beats[0] - SPB/2;
-    println(beats[0]);
     keyVal = kv;
     canSound = true;
   }

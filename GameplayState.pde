@@ -106,7 +106,7 @@ class GameplayState extends BaseState{
         setNextLevel();
       }
       if ((millis() - levelStart) <= NEW_LEVEL_TIME) {
-        image(lvlImages[levelIndex-1], width/2-100, height/4,200,40);
+        image(lvlImages[levelIndex-1], width/2-100, height/4,400,80);
       }
   }
   
@@ -120,12 +120,7 @@ class GameplayState extends BaseState{
       }
     }
     
-    if(key=='1') setNextLevel();
-    if(key=='q') println(frameRate);
-    if(key=='w') playSound(failsound);
     if(key=='p') noLoop();
-    if(key=='x') setState(FINISH_STATE);
-    if(key=='c') player.changeScore(10);
   }
     
   void cleanup(){
